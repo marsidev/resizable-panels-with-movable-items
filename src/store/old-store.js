@@ -1,30 +1,18 @@
 import { create } from 'zustand'
+import { swapArrayItems } from '../utils'
 
 const MAX_ITEMS = 40
 
 const defaultPickableItems = Array.from({ length: MAX_ITEMS }, (_, i) => ({
-  id: i,
-  name: `item_${i}`,
+  id: i + 1,
+  name: `item_${i + 1}`,
 }))
-
-const swapArrayItems = (array, fromIndex, toIndex) => {
-  if (toIndex >= array.length)
-    toIndex = array.length - 1
-
-  if (fromIndex === toIndex)
-    return array
-
-  const newArray = [...array]
-  const target = newArray[fromIndex]
-
-  newArray.splice(fromIndex, 1)
-  newArray.splice(toIndex, 0, target)
-
-  return newArray
-}
 
 const useStore = create((set, get) => ({
   pickableItems: defaultPickableItems,
+  setPickableItems: (items) => {
+    set({ pickableItems: items })
+  },
   movePickableItems: (from, to) => {
     const { pickableItems } = get()
     const fromIndex = pickableItems.findIndex(c => c.id === from)
@@ -33,6 +21,11 @@ const useStore = create((set, get) => ({
       return
 
     const newItems = swapArrayItems(pickableItems, fromIndex, toIndex)
+    set({ pickableItems: newItems })
+  },
+  removePickableItem: (id) => {
+    const { pickableItems } = get()
+    const newItems = pickableItems.filter(c => c.id !== id)
     set({ pickableItems: newItems })
   },
 

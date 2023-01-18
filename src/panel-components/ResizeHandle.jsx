@@ -1,7 +1,7 @@
 import { PanelResizeHandle } from 'react-resizable-panels'
-import styles from './styles.module.css'
+import styles from './ResizeHandle.module.css'
 
-export default function ResizeHandle({ className = '', id }) {
+export function ResizeHandle({ className = '', id }) {
   return (
     <PanelResizeHandle
       className={[styles.ResizeHandleOuter, className].join(' ')}
