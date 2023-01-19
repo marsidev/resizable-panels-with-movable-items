@@ -1,7 +1,15 @@
 import { forwardRef, memo } from 'react'
 import classNames from 'classnames'
+import { motion } from 'framer-motion'
 import styles from './Item.module.scss'
 import { Handle, Remove } from '~/dnd-components'
+
+const initialMotionAnimate = {
+  x: 0,
+  y: 0,
+  scale: 1,
+  opacity: 1,
+}
 
 export const Item = memo(forwardRef(({
   color,
@@ -38,12 +46,12 @@ export const Item = memo(forwardRef(({
           'transition': [transition, wrapperStyle?.transition]
             .filter(Boolean)
             .join(', '),
-          '--translate-x': transform
-            ? `${Math.round(transform.x)}px`
-            : undefined,
-          '--translate-y': transform
-            ? `${Math.round(transform.y)}px`
-            : undefined,
+          // '--translate-x': transform
+          //   ? `${Math.round(transform.x)}px`
+          //   : undefined,
+          // '--translate-y': transform
+          //   ? `${Math.round(transform.y)}px`
+          //   : undefined,
           '--scale-x': transform?.scaleX
             ? `${transform.scaleX}`
             : undefined,
@@ -56,16 +64,43 @@ export const Item = memo(forwardRef(({
       }
       ref={ref}
     >
-      <div
+      <motion.div
         className={classNames(
           styles.Item,
-          dragging && styles.dragging,
+          //   dragging && styles.dragging,
           handle && styles.withHandle,
           dragOverlay && styles.dragOverlay,
           disabled && styles.disabled,
           color && styles.color,
         )}
         style={style}
+        layoutId={String(value)}
+        animate={
+          transform
+            ? {
+              x: transform.x,
+              y: transform.y,
+              scale: dragging ? 1.05 : 1,
+              zIndex: dragging ? 1 : 0,
+              boxShadow: dragging
+                ? '0 0 0 1px rgba(63, 63, 68, 0.05), 0px 15px 15px 0 rgba(34, 33, 81, 0.25)'
+                : undefined,
+              opacity: dragging ? 0.5 : 1,
+            }
+            : initialMotionAnimate
+        }
+        transition={{
+          duration: !dragging ? 0.25 : 0,
+          easings: {
+            type: 'spring',
+          },
+          scale: {
+            duration: 0.25,
+          },
+          zIndex: {
+            delay: dragging ? 0 : 0.25,
+          },
+        }}
         {...(!handle ? listeners : undefined)}
         {...props}
         tabIndex={!handle ? 0 : undefined}
@@ -74,7 +109,7 @@ export const Item = memo(forwardRef(({
 
         {onRemove && <Remove className={styles.Remove} onClick={onRemove} />}
         {handle && <Handle isDragging={dragOverlay || dragging} {...handleProps} {...listeners} />}
-      </div>
+      </motion.div>
     </li>
   )
 }))
