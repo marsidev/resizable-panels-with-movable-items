@@ -3,9 +3,21 @@ import {
   rectSortingStrategy,
 } from '@dnd-kit/sortable'
 import { useDroppable } from '@dnd-kit/core'
-// import { useEffect } from 'react'
-import { Container as MainContainer } from '~/commons'
+import styled from 'styled-components'
 import { FlexContainer, SortableItem } from '~/dnd-components'
+
+export const MainContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  max-height: calc(100vh);
+  background-color: var(--color-panel-background);
+  justify-content: center;
+  padding: 16px;
+  height: 100%;
+  border-radius: 0.5rem;
+  overflow-y: auto;
+`
 
 export const DnDPanel = (props) => {
   const {
@@ -13,7 +25,6 @@ export const DnDPanel = (props) => {
     getItemStyles = () => ({}),
     getNewIndex,
     handle = false,
-    // isDisabled = () => false,
     removable,
     strategy = rectSortingStrategy,
     wrapperStyle = () => ({}),
@@ -23,22 +34,9 @@ export const DnDPanel = (props) => {
   } = props
   const {
     setNodeRef,
-    // over,
-    // active,
   } = useDroppable({
     id: containerId,
   })
-
-  // const activeContainer = active?.data?.current?.sortable.containerId
-  // const overContainer = over?.data?.current?.sortable?.containerId
-  // const canDrop = Boolean(activeContainer)
-  //   && Boolean(overContainer)
-  //   && (activeContainer === overContainer
-  //     || (activeContainer === 'main' && overContainer === 'toolbar'))
-
-  // useEffect(() => {
-  //   console.log('useDroppable', { overContainer, activeContainer, canDrop, containerId })
-  // }, [canDrop, containerId])
 
   return (
     <MainContainer data-id="panel-container">
@@ -53,7 +51,6 @@ export const DnDPanel = (props) => {
               index={index}
               style={getItemStyles}
               wrapperStyle={wrapperStyle}
-              // disabled={isDisabled(item.id)}
               disabled={false}
               onRemove={removable ? handleRemove : undefined}
               animateLayoutChanges={animateLayoutChanges}
