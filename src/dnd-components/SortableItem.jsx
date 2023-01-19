@@ -1,4 +1,5 @@
 import { useSortable } from '@dnd-kit/sortable'
+import { useEffect } from 'react'
 import { Item } from '~/dnd-components'
 
 export const SortableItem = ({
@@ -6,13 +7,13 @@ export const SortableItem = ({
   animateLayoutChanges,
   getNewIndex,
   handle,
-  id,
-  value,
+  item,
   index,
   onRemove,
   style,
   useDragOverlay,
   wrapperStyle,
+  containerId,
 }) => {
   const {
     active,
@@ -25,17 +26,31 @@ export const SortableItem = ({
     setActivatorNodeRef,
     transform,
     transition,
+    over,
   } = useSortable({
-    id,
+    id: item.id,
     animateLayoutChanges,
     disabled,
     getNewIndex,
   })
 
+  useEffect(() => {
+    if (!active) return
+    if (!over) return
+    // const activeId = active?.data?.current?.sortable?.items[active?.data?.current?.sortable?.index]
+    // const overId = over?.data?.current?.sortable?.items[over?.data?.current?.sortable?.index]
+    const activeId = active?.data?.id
+    const overId = over?.data?.id
+
+    if (activeId === item.id || overId === item.id) {
+      console.log({ containerId, item, active, transform, over, transition, activeId, overId })
+    }
+  }, [containerId, item, active, transform, over, transition])
+
   return (
     <Item
       ref={setNodeRef}
-      value={value}
+      item={item}
       disabled={disabled}
       dragging={isDragging}
       sorting={isSorting}
@@ -44,19 +59,16 @@ export const SortableItem = ({
       index={index}
       style={style({
         index,
-        id,
+        id: item.id,
         isDragging,
         isSorting,
         overIndex,
       })}
-      onRemove={onRemove ? () => onRemove(id) : undefined}
+      onRemove={onRemove ? () => onRemove(item.id) : undefined}
       transform={transform}
       transition={transition}
-      wrapperStyle={wrapperStyle?.({ index, isDragging, active, id })}
+      wrapperStyle={wrapperStyle?.({ index, isDragging, active, id: item.id })}
       listeners={listeners}
-      data-index={index}
-      data-id={id}
-      data-value={value}
       dragOverlay={!useDragOverlay && isDragging}
       {...attributes}
     />

@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import { DndContext, DragOverlay, KeyboardSensor, MeasuringStrategy, MouseSensor, TouchSensor, closestCorners, defaultDropAnimationSideEffects, useSensor, useSensors } from '@dnd-kit/core'
 import { defaultAnimateLayoutChanges, sortableKeyboardCoordinates } from '@dnd-kit/sortable'
 import { createPortal } from 'react-dom'
+import { useEffect, useState } from 'react'
 import { Item } from '~/dnd-components'
 import { DnDPanel, ResizeHandle } from '~/panel-components'
 import { useStore } from '~/store'
@@ -50,12 +51,22 @@ const dropAnimationConfig = {
 
 function App() {
   const [activeItem, setActiveItem] = useStore(s => [s.activeItem, s.setActiveItem])
-  const [items, setItems] = useStore(s => [s.items, s.setItems, s.setMainItems, s.setToolbarItems])
+  const [items, setItems, setMainItems] = useStore(s => [s.items, s.setItems, s.setMainItems])
   const [removeMainItem, removeToolbarItem] = useStore(s => [s.removeMainItem, s.removeToolbarItem])
   const [moveMainItems, moveToolbarItems] = useStore(s => [s.moveMainItems, s.moveToolbarItems])
-  const { toolbar: toolbarItems, main: mainItems } = items
+  const [addMainItem] = useStore(s => [s.addMainItem])
+  // const { toolbar: toolbarItems, main: mainItems } = items
+  const [tempMainItems, setTempMainItems] = useState(items.main)
 
   const getIndex = (id, containerId) => items[containerId].findIndex(item => item.id === id)
+
+  useEffect(() => {
+    console.log({ items, activeItem })
+  }, [items, activeItem])
+
+  useEffect(() => {
+    console.log({ tempMainItems })
+  }, [tempMainItems])
 
   const sensors = useSensors(
     useSensor(MouseSensor),
@@ -85,19 +96,25 @@ function App() {
     if (!active) return
     const activeContainer = findContainer(active.id)
     const item = getItem(active.id)
+
     setActiveItem(item)
     console.log({ handler: 'dragStart', activeContainer, activeItemBefore: activeItem, activeItemAfter: item })
   }
 
   function handleDragEnd({ active, over }) {
+    if (!active || !over) return
     const activeContainer = findContainer(active.id)
     const overContainer = findContainer(over.id)
 
     if (
       !activeContainer
       || !overContainer
-      || activeContainer !== overContainer
+      // || activeContainer !== overContainer
+      || overContainer === 'toolbar' // disable reordering in toolbar panel
     ) {
+      console.log('dragEnd failed', { handler: 'dragEnd', activeContainer, overContainer })
+      setActiveItem(null)
+      setTempMainItems(items.main)
       return
     }
 
@@ -108,12 +125,22 @@ function App() {
     console.log({ handler: 'dragEnd', activeContainer, overContainer, activeItem, overItem })
 
     if (activeIndex !== overIndex) {
-      if (activeContainer === 'main') {
+      if (activeContainer === 'toolbar' && overContainer === 'main') {
+        setMainItems(tempMainItems)
+        // moveToolbarItems(activeIndex, overIndex)
+        // addMainItem(items.toolbar[activeIndex])
+      }
+      else if (activeContainer === 'main' && overContainer === 'main') {
         moveMainItems(activeIndex, overIndex)
+        // setTempMainItems(items.main)
       }
-      if (activeContainer === 'toolbar') {
+      else if (activeContainer === 'toolbar' && overContainer === 'toolbar') {
         moveToolbarItems(activeIndex, overIndex)
+        // setTempMainItems(items.main)
       }
+    }
+    else {
+      console.log('dragEnd failed - same index', { handler: 'dragEnd', activeContainer, overContainer, activeIndex, overIndex })
     }
 
     setActiveItem(null)
@@ -128,18 +155,17 @@ function App() {
       || !overContainer
       || activeContainer === overContainer
       || (activeContainer !== 'toolbox' && overContainer !== 'main')
+      // || (activeContainer === 'toolbar' && overContainer === 'toolbar') // disable reordering in toolbar panel
     ) {
-      // console.log('invalid dropping', { handler: 'dragOver', activeContainer, overContainer, activeId: active.id, overId: over.id })
+      console.log('invalid dropping', { handler: 'dragOver', activeContainer, overContainer, activeId: active.id, overId: over.id })
       return
     }
 
-    const activeItems = items[activeContainer]
-    const overItems = items[overContainer]
-    const activeIndex = getIndex(active.id, activeContainer)
+    // const activeIndex = getIndex(active.id, activeContainer)
+    // const activeItems = items[activeContainer]
     const overIndex = getIndex(over.id, overContainer)
+    const overItems = items[overContainer]
     const overItem = getItem(over.id)
-
-    console.log({ handler: 'dragOver', activeContainer, overContainer, activeItem, overItem, activeItems, overItems })
 
     let newIndex
     if (over.id in items) {
@@ -157,28 +183,25 @@ function App() {
       newIndex = overIndex >= 0 ? overIndex + modifier : overItems.length + 1
     }
 
-    const newItems = {
-      ...items,
-      [activeContainer]: [
-        ...items[activeContainer].filter(item => item.id !== active.id),
-      ],
-      [overContainer]: [
-        ...items[overContainer].slice(0, newIndex),
-        items[activeContainer][activeIndex], // active.id
-        ...items[overContainer].slice(newIndex),
-      ],
+    const id = `main_${activeItem.id.split('_')[1]}`
+    if (items.main.some(i => i.id === id)) {
+      // const index = items.main.findIndex(i => i.id === id)
+      // moveMainItems(index, newIndex)
+      // console.log('moving existing item', { handler: 'dragOver', activeContainer, overContainer, activeItem, overItem, overItems, id })
+      // console.log('dragOver failed - item already exists', { handler: 'dragOver', activeContainer, overContainer, activeItem, overItem, overItems, id })
+      return
     }
+    const itemToAdd = { ...activeItem, id }
 
-    // const newItems = {
-    //   ...items,
-    //   main: [
-    //     ...items.main.slice(0, newIndex),
-    //     items.toolbar[activeIndex],
-    //     ...items.main.slice(newIndex),
-    //   ],
-    // }
+    const newMainItems = [
+      ...items.main.slice(0, newIndex),
+      itemToAdd,
+      ...items.main.slice(newIndex),
+    ]
+    setTempMainItems(newMainItems)
+    console.log({ handler: 'dragOver', activeContainer, overContainer, activeItem, overItem, overItems, newMainItems, newIndex, itemToAdd })
 
-    setItems(newItems)
+    // setMainItems(newMainItems)
   }
 
   return (
@@ -194,13 +217,14 @@ function App() {
       >
         <PanelGroup autoSaveId="example-v5" direction="horizontal">
           <Panel defaultSize={80} order={1}>
-            <DnDPanel {...mainPanelProps} items={mainItems} handleRemove={removeMainItem} />
+            <DnDPanel {...mainPanelProps} items={tempMainItems} handleRemove={removeMainItem} />
+            {/* <DnDPanel {...mainPanelProps} items={items.main} handleRemove={removeMainItem} /> */}
           </Panel>
 
           <ResizeHandle />
 
           <Panel order={2}>
-            <DnDPanel {...toolbarPanelProps} items={toolbarItems} handleRemove={removeToolbarItem} />
+            <DnDPanel {...toolbarPanelProps} items={items.toolbar} handleRemove={removeToolbarItem} />
           </Panel>
         </PanelGroup>
 
@@ -213,9 +237,8 @@ function App() {
             {activeItem
               ? (
                 <Item
-                  value={activeItem.value}
                   handle={true}
-                  data-id={activeItem.id}
+                  item={activeItem}
                   wrapperStyle={{
                     width: 100,
                     height: 100,

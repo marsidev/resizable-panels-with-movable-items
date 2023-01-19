@@ -85,14 +85,15 @@ $focused-outline-color: #4c9ffe;
     cursor: grab;
   }
 
-  // &.dragging:not(.dragOverlay) {
-  //   opacity: var(--dragging-opacity, 0.5);
-  //   z-index: 0;
+  &.dragging:not(.dragOverlay) {
+    scale: 1.05;
+    opacity: var(--dragging-opacity, 0.5);
+    z-index: 0;
 
-  //   &:focus {
-  //     box-shadow: $box-shadow;
-  //   }
-  // }
+    &:focus {
+      box-shadow: $box-shadow;
+    }
+  }
 
   &.disabled {
     color: #999;
