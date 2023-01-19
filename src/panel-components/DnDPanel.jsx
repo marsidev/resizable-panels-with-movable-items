@@ -6,7 +6,7 @@ import { useDroppable } from '@dnd-kit/core'
 import { Container as MainContainer } from '~/commons'
 import { FlexContainer, SortableItem } from '~/dnd-components'
 
-export const PickPanel = (props) => {
+export const DnDPanel = (props) => {
   const {
     animateLayoutChanges,
     getItemStyles = () => ({}),

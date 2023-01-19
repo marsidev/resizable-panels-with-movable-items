@@ -1,3 +1,2 @@
-export * from './ContentPanel'
-export * from './PickPanel'
+export * from './DnDPanel'
 export * from './ResizeHandle'

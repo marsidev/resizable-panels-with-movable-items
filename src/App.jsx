@@ -1,11 +1,10 @@
 import { Panel, PanelGroup } from 'react-resizable-panels'
 import styled from 'styled-components'
-import { Fragment } from 'react'
 import { DndContext, DragOverlay, KeyboardSensor, MeasuringStrategy, MouseSensor, TouchSensor, closestCorners, defaultDropAnimationSideEffects, useSensor, useSensors } from '@dnd-kit/core'
 import { arrayMove, defaultAnimateLayoutChanges, sortableKeyboardCoordinates } from '@dnd-kit/sortable'
 import { createPortal } from 'react-dom'
 import { Item } from '~/dnd-components'
-import { PickPanel, ResizeHandle } from '~/panel-components'
+import { DnDPanel, ResizeHandle } from '~/panel-components'
 import { useStore } from '~/store'
 
 const Container = styled.div`
@@ -162,54 +161,52 @@ function App() {
   }
 
   return (
-    <Fragment>
-      <Container>
-        <DndContext
-          // announcements={defaultAnnouncements}
-          sensors={sensors}
-          collisionDetection={closestCorners}
-          onDragStart={handleDragStart}
-          onDragOver={handleDragOver}
-          onDragEnd={handleDragEnd}
-          measuring={{ droppable: { strategy: MeasuringStrategy.Always } }}
-        >
-          <PanelGroup autoSaveId="example-v5" direction="horizontal">
-            <Panel defaultSize={80} order={1}>
-              {/* <ContentPanel /> */}
-              <PickPanel {...mainPanelProps} items={mainItems} handleRemove={removeMainItem} />
-            </Panel>
-            <ResizeHandle />
+    <Container>
+      <DndContext
+        // announcements={defaultAnnouncements}
+        sensors={sensors}
+        collisionDetection={closestCorners}
+        onDragStart={handleDragStart}
+        onDragOver={handleDragOver}
+        onDragEnd={handleDragEnd}
+        measuring={{ droppable: { strategy: MeasuringStrategy.Always } }}
+      >
+        <PanelGroup autoSaveId="example-v5" direction="horizontal">
+          <Panel defaultSize={80} order={1}>
+            <DnDPanel {...mainPanelProps} items={mainItems} handleRemove={removeMainItem} />
+          </Panel>
 
-            <Panel order={2}>
-              <PickPanel {...toolbarPanelProps} items={toolbarItems} handleRemove={removeToolbarItem} />
-            </Panel>
-          </PanelGroup>
+          <ResizeHandle />
 
-          {createPortal(
-            <DragOverlay
-              adjustScale={true}
-              dropAnimation={dropAnimationConfig}
-            >
-              {activeId
-                ? (
-                  <Item
-                    value={activeId}
-                    handle={true}
-                    data-id={activeId}
-                    wrapperStyle={{
-                      width: 100,
-                      height: 100,
-                    }}
-                    dragOverlay
-                  />
-                )
-                : null}
-            </DragOverlay>,
-            document.body,
-          )}
-        </DndContext>
-      </Container>
-    </Fragment>
+          <Panel order={2}>
+            <DnDPanel {...toolbarPanelProps} items={toolbarItems} handleRemove={removeToolbarItem} />
+          </Panel>
+        </PanelGroup>
+
+        {createPortal(
+          <DragOverlay
+            adjustScale={true}
+            dropAnimation={dropAnimationConfig}
+          >
+            {activeId
+              ? (
+                <Item
+                  value={activeId}
+                  handle={true}
+                  data-id={activeId}
+                  wrapperStyle={{
+                    width: 100,
+                    height: 100,
+                  }}
+                  dragOverlay
+                />
+              )
+              : null}
+          </DragOverlay>,
+          document.body,
+        )}
+      </DndContext>
+    </Container>
   )
 }
 
