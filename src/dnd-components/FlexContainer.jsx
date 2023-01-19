@@ -1,9 +1,10 @@
+import { forwardRef } from 'react'
 import styles from './FlexContainer.module.scss'
 
-export function FlexContainer({ children }) {
+export const FlexContainer = forwardRef(({ children }, ref) => {
   return (
-    <ul className={styles.FlexContainer}>
+    <ul ref={ref} className={styles.FlexContainer}>
       {children}
     </ul>
   )
-}
+})

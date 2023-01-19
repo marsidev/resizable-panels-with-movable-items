@@ -1,7 +1,7 @@
 import { useSortable } from '@dnd-kit/sortable'
 import { Item } from '~/dnd-components'
 
-export function SortableItem({
+export const SortableItem = ({
   disabled,
   animateLayoutChanges,
   getNewIndex,
@@ -10,10 +10,9 @@ export function SortableItem({
   index,
   onRemove,
   style,
-  // renderItem,
   useDragOverlay,
   wrapperStyle,
-}) {
+}) => {
   const {
     active,
     attributes,
@@ -41,7 +40,6 @@ export function SortableItem({
       sorting={isSorting}
       handle={handle}
       handleProps={handle ? { ref: setActivatorNodeRef } : undefined}
-      // renderItem={renderItem}
       index={index}
       style={style({
         index,
