@@ -11,6 +11,19 @@ const initialMotionAnimate = {
   opacity: 1,
 }
 
+const motionTransition = dragging => ({
+  duration: !dragging ? 0.25 : 0,
+  easings: {
+    type: 'spring',
+  },
+  scale: {
+    duration: 0.25,
+  },
+  zIndex: {
+    delay: dragging ? 0 : 0.25,
+  },
+})
+
 export const Item = memo(forwardRef(({
   color,
   dragOverlay,
@@ -89,18 +102,7 @@ export const Item = memo(forwardRef(({
             }
             : initialMotionAnimate
         }
-        transition={{
-          duration: !dragging ? 0.25 : 0,
-          easings: {
-            type: 'spring',
-          },
-          scale: {
-            duration: 0.25,
-          },
-          zIndex: {
-            delay: dragging ? 0 : 0.25,
-          },
-        }}
+        transition={motionTransition(dragging)}
         {...(!handle ? listeners : undefined)}
         {...props}
         tabIndex={!handle ? 0 : undefined}

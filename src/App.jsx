@@ -1,7 +1,7 @@
 import { Panel, PanelGroup } from 'react-resizable-panels'
 import styled from 'styled-components'
 import { DndContext, DragOverlay, KeyboardSensor, MeasuringStrategy, MouseSensor, TouchSensor, closestCorners, defaultDropAnimationSideEffects, useSensor, useSensors } from '@dnd-kit/core'
-import { arrayMove, defaultAnimateLayoutChanges, sortableKeyboardCoordinates } from '@dnd-kit/sortable'
+import { defaultAnimateLayoutChanges, sortableKeyboardCoordinates } from '@dnd-kit/sortable'
 import { createPortal } from 'react-dom'
 import { Item } from '~/dnd-components'
 import { DnDPanel, ResizeHandle } from '~/panel-components'
@@ -17,7 +17,7 @@ const Container = styled.div`
 `
 
 const mainPanelProps = {
-  id: 'main',
+  containerId: 'main',
   wrapperStyle: () => ({
     width: 100,
     height: 100,
@@ -28,7 +28,7 @@ const mainPanelProps = {
 }
 
 const toolbarPanelProps = {
-  id: 'toolbar',
+  containerId: 'toolbar',
   wrapperStyle: () => ({
     width: 100,
     height: 100,
@@ -49,10 +49,13 @@ const dropAnimationConfig = {
 }
 
 function App() {
-  const [activeId, setActiveId] = useStore(s => [s.activeId, s.setActiveId])
-  const [items, setItems, setMainItems, setToolbarItems] = useStore(s => [s.items, s.setItems, s.setMainItems, s.setToolbarItems])
+  const [activeItem, setActiveItem] = useStore(s => [s.activeItem, s.setActiveItem])
+  const [items, setItems] = useStore(s => [s.items, s.setItems, s.setMainItems, s.setToolbarItems])
   const [removeMainItem, removeToolbarItem] = useStore(s => [s.removeMainItem, s.removeToolbarItem])
+  const [moveMainItems, moveToolbarItems] = useStore(s => [s.moveMainItems, s.moveToolbarItems])
   const { toolbar: toolbarItems, main: mainItems } = items
+
+  const getIndex = (id, containerId) => items[containerId].findIndex(item => item.id === id)
 
   const sensors = useSensors(
     useSensor(MouseSensor),
@@ -68,13 +71,22 @@ function App() {
       return id
     }
 
-    return Object.keys(items).find(key => items[key].includes(id))
+    return Object.keys(items).find(key => items[key].map(item => item.id).includes(id))
+  }
+
+  const getItem = (id) => {
+    if (!id) return null
+    const container = findContainer(id)
+    const activeItem = items[container].find(item => item.id === id)
+    return activeItem
   }
 
   function handleDragStart({ active }) {
     if (!active) return
-    console.log({ handler: 'dragStart', active })
-    setActiveId(active.id)
+    const activeContainer = findContainer(active.id)
+    const item = getItem(active.id)
+    setActiveItem(item)
+    console.log({ handler: 'dragStart', activeContainer, activeItemBefore: activeItem, activeItemAfter: item })
   }
 
   function handleDragEnd({ active, over }) {
@@ -89,25 +101,22 @@ function App() {
       return
     }
 
-    const activeIndex = items[activeContainer].indexOf(active.id)
-    const overIndex = items[overContainer].indexOf(over.id)
+    const activeIndex = getIndex(active.id, activeContainer)
+    const overIndex = getIndex(over.id, overContainer)
+    const overItem = getItem(over.id)
 
-    console.log({ handler: 'dragEnd', activeContainer, overContainer, activeIndex, overIndex })
+    console.log({ handler: 'dragEnd', activeContainer, overContainer, activeItem, overItem })
 
     if (activeIndex !== overIndex) {
       if (activeContainer === 'main') {
-        const tempItems = [...mainItems]
-        const newItems = arrayMove(tempItems, activeIndex, overIndex)
-        setMainItems(newItems)
+        moveMainItems(activeIndex, overIndex)
       }
       if (activeContainer === 'toolbar') {
-        const tempItems = [...toolbarItems]
-        const newItems = arrayMove(tempItems, activeIndex, overIndex)
-        setToolbarItems(newItems)
+        moveToolbarItems(activeIndex, overIndex)
       }
     }
 
-    setActiveId(null)
+    setActiveItem(null)
   }
 
   function handleDragOver({ active, over, draggingRect }) {
@@ -118,16 +127,19 @@ function App() {
       !activeContainer
       || !overContainer
       || activeContainer === overContainer
+      || (activeContainer !== 'toolbox' && overContainer !== 'main')
     ) {
+      // console.log('invalid dropping', { handler: 'dragOver', activeContainer, overContainer, activeId: active.id, overId: over.id })
       return
     }
 
     const activeItems = items[activeContainer]
     const overItems = items[overContainer]
-    const activeIndex = activeItems.indexOf(active.id)
-    const overIndex = overItems.indexOf(over.id)
+    const activeIndex = getIndex(active.id, activeContainer)
+    const overIndex = getIndex(over.id, overContainer)
+    const overItem = getItem(over.id)
 
-    console.log({ handler: 'dragOver', activeContainer, overContainer, activeItems, overItems, activeIndex, overIndex })
+    console.log({ handler: 'dragOver', activeContainer, overContainer, activeItem, overItem, activeItems, overItems })
 
     let newIndex
     if (over.id in items) {
@@ -148,7 +160,7 @@ function App() {
     const newItems = {
       ...items,
       [activeContainer]: [
-        ...items[activeContainer].filter(item => item !== active.id),
+        ...items[activeContainer].filter(item => item.id !== active.id),
       ],
       [overContainer]: [
         ...items[overContainer].slice(0, newIndex),
@@ -156,6 +168,15 @@ function App() {
         ...items[overContainer].slice(newIndex),
       ],
     }
+
+    // const newItems = {
+    //   ...items,
+    //   main: [
+    //     ...items.main.slice(0, newIndex),
+    //     items.toolbar[activeIndex],
+    //     ...items.main.slice(newIndex),
+    //   ],
+    // }
 
     setItems(newItems)
   }
@@ -187,13 +208,14 @@ function App() {
           <DragOverlay
             adjustScale={true}
             dropAnimation={dropAnimationConfig}
+            // modifiers={[restrictToWindowEdges]}
           >
-            {activeId
+            {activeItem
               ? (
                 <Item
-                  value={activeId}
+                  value={activeItem.value}
                   handle={true}
-                  data-id={activeId}
+                  data-id={activeItem.id}
                   wrapperStyle={{
                     width: 100,
                     height: 100,

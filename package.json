@@ -20,6 +20,7 @@
 		"react-dom": "^18.2.0",
 		"react-resizable-panels": "^0.0.33",
 		"styled-components": "^5.3.6",
+		"uuid": "^9.0.0",
 		"vite-jsconfig-paths": "^2.0.1",
 		"vite-tsconfig-paths": "^4.0.3",
 		"zustand": "^4.3.2"

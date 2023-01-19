@@ -7,6 +7,7 @@ export const SortableItem = ({
   getNewIndex,
   handle,
   id,
+  value,
   index,
   onRemove,
   style,
@@ -34,7 +35,7 @@ export const SortableItem = ({
   return (
     <Item
       ref={setNodeRef}
-      value={id}
+      value={value}
       disabled={disabled}
       dragging={isDragging}
       sorting={isSorting}
@@ -55,6 +56,7 @@ export const SortableItem = ({
       listeners={listeners}
       data-index={index}
       data-id={id}
+      data-value={value}
       dragOverlay={!useDragOverlay && isDragging}
       {...attributes}
     />
