@@ -18,10 +18,20 @@ const Container = styled.div`
 
 const mainPanelProps = {
   containerId: 'main',
-  wrapperStyle: () => ({
-    width: 100,
-    height: 100,
-  }),
+  wrapperStyle: ({ index }) => {
+    if (index === 0) {
+      return {
+        fontSize: '2rem',
+        width: 200,
+        height: 200,
+      }
+    }
+
+    return {
+      width: 100,
+      height: 100,
+    }
+  },
   animateLayoutChanges: args => defaultAnimateLayoutChanges({ ...args, wasDragging: true }),
   removable: true,
   handle: true,
