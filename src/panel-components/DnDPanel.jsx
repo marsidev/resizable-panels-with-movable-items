@@ -5,7 +5,9 @@ import {
 import { useDroppable } from '@dnd-kit/core'
 import styled from 'styled-components'
 // import { useEffect } from 'react'
+import { useAutoAnimate } from '@formkit/auto-animate/react'
 import { GridContainer, SortableItem } from '~/dnd-components'
+import { useMergeRefs } from '~/use-merge-refs'
 
 export const PanelContainer = styled.div`
   display: flex;
@@ -42,6 +44,9 @@ export const DnDPanel = (props) => {
     id: containerId,
   })
 
+  const [animRef] = useAutoAnimate()
+  const refs = useMergeRefs(animRef, setNodeRef)
+
   // const activeItem = items.find(item => item.id === active?.id)
   // const overItem = items.find(item => item.id === over?.id)
   // useEffect(() => {
@@ -51,7 +56,7 @@ export const DnDPanel = (props) => {
   return (
     <PanelContainer data-id="panel-container">
       <SortableContext id={containerId} items={items} strategy={strategy}>
-        <GridContainer ref={setNodeRef} columns={columns}>
+        <GridContainer ref={refs} columns={columns}>
           {items.map((item, index) => (
             <SortableItem
               item={item}

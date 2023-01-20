@@ -63,16 +63,16 @@ export const Item = forwardRef(({
   const liStyle = {
     ...wrapperStyle,
     ...item.style,
-    // 'transition': [transition, wrapperStyle?.transition]
-    //   .filter(Boolean)
-    //   .join(', '),
-    // // 'transform': CSS.Translate.toString(transform),
-    // '--translate-x': transform
-    //   ? `${Math.round(transform.x)}px`
-    //   : undefined,
-    // '--translate-y': transform
-    //   ? `${Math.round(transform.y)}px`
-    //   : undefined,
+    'transition': [transition, wrapperStyle?.transition]
+      .filter(Boolean)
+      .join(', '),
+    // 'transform': CSS.Translate.toString(transform),
+    '--translate-x': transform
+      ? `${Math.round(transform.x)}px`
+      : undefined,
+    '--translate-y': transform
+      ? `${Math.round(transform.y)}px`
+      : undefined,
     // '--scale-x': transform?.scaleX
     //   ? `${transform.scaleX}`
     //   : undefined,
@@ -111,9 +111,9 @@ export const Item = forwardRef(({
           color && styles.color,
         )}
         style={style}
-        layoutId={item.id}
-        animate={getMotionAnimate(transform, dragging)}
-        transition={getMotionTransition(dragging)}
+        // layoutId={item.id}
+        // animate={getMotionAnimate(transform, dragging)}
+        // transition={getMotionTransition(dragging)}
         data-id={item.id}
         data-value={item.value}
         data-index={index}
