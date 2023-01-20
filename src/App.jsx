@@ -17,7 +17,7 @@ const Container = styled.div`
   gap: 1rem;
 `
 
-const defaultTileWidth = 100
+const defaultTileSize = 100
 const defaultGridGap = 8
 const tilesContainerPadding = 32
 
@@ -72,8 +72,8 @@ function App() {
     const panel1Width = (containerWidth - resizerWidth) * (panel1Size / 100)
     const panel2Width = (containerWidth - resizerWidth) * (panel2Size / 100)
 
-    const panel1Columns = Math.floor(panel1Width / (defaultTileWidth + defaultGridGap + tilesContainerPadding / 2))
-    const panel2Columns = Math.floor(panel2Width / (defaultTileWidth + defaultGridGap + tilesContainerPadding / 2))
+    const panel1Columns = Math.floor(panel1Width / (defaultTileSize + defaultGridGap + tilesContainerPadding / 2))
+    const panel2Columns = Math.floor(panel2Width / (defaultTileSize + defaultGridGap + tilesContainerPadding / 2))
 
     setPanel1Cols(panel1Columns)
     setPanel2Cols(panel2Columns)

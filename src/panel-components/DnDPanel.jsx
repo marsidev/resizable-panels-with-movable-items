@@ -66,6 +66,7 @@ export const DnDPanel = (props) => {
               animateLayoutChanges={animateLayoutChanges}
               useDragOverlay={true}
               getNewIndex={getNewIndex}
+              containerId={containerId}
             />
           ))}
         </GridContainer>

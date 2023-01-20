@@ -44,33 +44,20 @@ const getMotionAnimate = (transform, dragging) => {
     : initialMotionAnimate
 }
 
-const ResizableLi = forwardRef((props, ref) => {
-  const { onResize, style, className, children, width, height, ...rest } = props
+const ResizableWrapper = forwardRef((props, ref) => {
+  const { children, allowResizing, className, style, 'data-id': dataId, ...resizableProps } = props
+  const commonProps = { className, style, 'data-id': dataId }
 
-  const columns = Math.ceil(width / (defaultTileSize + defaultGridGap))
-  const gridRowStart = `span ${columns}`
-  const gridColumnStart = `span ${columns}`
+  if (!allowResizing) {
+    return (
+      <div ref={ref} {...commonProps}>
+        {children}
+      </div>
+    )
+  }
 
   return (
-    <Resizable
-      as='li'
-      className={className}
-      defaultSize={{
-        width: defaultTileSize,
-        height: defaultTileSize,
-      }}
-      minHeight={defaultTileSize}
-      minWidth={defaultTileSize}
-      size={{ width, height }}
-      data-id="resizable-item-wrapper"
-      style={{
-        ...style,
-        gridRowStart,
-        gridColumnStart,
-      }}
-      onResizeStop={onResize}
-      enable={{ top: false, right: false, bottom: false, left: false, topRight: false, bottomRight: true, bottomLeft: false, topLeft: false }}
-    >
+    <Resizable {...commonProps} {...resizableProps} >
       <div
         data-id="item-with-ref"
         ref={ref}
@@ -79,7 +66,6 @@ const ResizableLi = forwardRef((props, ref) => {
           height: '100%',
           display: 'flex',
         }}
-        {...rest}
       >
         {children}
       </div>
@@ -104,10 +90,14 @@ export const Item = forwardRef(({
   transform,
   item,
   wrapperStyle,
+  containerId,
   ...props
 }, ref) => {
   const [width, setWidth] = useState(item.style.width)
   const [height, setHeight] = useState(item.style.height)
+
+  const gridCols = Math.ceil(width / (defaultTileSize + defaultGridGap))
+  const gridRows = Math.ceil(height / (defaultTileSize + defaultGridGap))
 
   const liStyle = {
     ...wrapperStyle,
@@ -130,7 +120,11 @@ export const Item = forwardRef(({
     //   : undefined,
     '--index': index,
     '--color': color,
-    'opacity': 1,
+    opacity: 1,
+    gridRowStart: `span ${gridRows}`,
+    gridColumnStart: `span ${gridCols}`,
+    width: `${width}px`,
+    height: `${height}px`,
   }
 
   // useEffect(() => {
@@ -148,8 +142,8 @@ export const Item = forwardRef(({
   }
 
   return (
-    <ResizableLi
-      // as="li"
+    <ResizableWrapper
+      as='li'
       className={classNames(
         styles.Wrapper,
         fadeIn && styles.fadeIn,
@@ -158,9 +152,18 @@ export const Item = forwardRef(({
       )}
       style={liStyle}
       ref={ref}
-      onResize={onResize}
-      width={width}
-      height={height}
+      defaultSize={{
+        width: defaultTileSize,
+        height: defaultTileSize,
+      }}
+      minHeight={defaultTileSize}
+      minWidth={defaultTileSize}
+      size={{ width, height }}
+      data-id="resizable-item-wrapper"
+      onResizeStop={onResize}
+      enable={{ bottomRight: true }}
+      allowResizing={containerId === 'main'}
+      // enable={{ top: false, right: false, bottom: false, left: false, topRight: false, bottomRight: true, bottomLeft: false, topLeft: false }}
     >
       <motion.div
         className={classNames(
@@ -187,6 +190,6 @@ export const Item = forwardRef(({
         {onRemove && <Remove className={styles.Remove} onClick={onRemove} />}
         {handle && <Handle isDragging={dragOverlay || dragging} {...handleProps} {...listeners} />}
       </motion.div>
-    </ResizableLi>
+    </ResizableWrapper>
   )
 })

@@ -14,6 +14,7 @@ export const SortableItem = ({
   style,
   useDragOverlay,
   wrapperStyle,
+  containerId,
 }) => {
   const {
     active,
@@ -67,6 +68,7 @@ export const SortableItem = ({
       wrapperStyle={wrapperStyle?.({ index, isDragging, active, item })}
       listeners={listeners}
       dragOverlay={!useDragOverlay && isDragging}
+      containerId={containerId}
       {...attributes}
     />
   )
