@@ -14,6 +14,9 @@ const initialMotionAnimate = {
   y: 0,
   scale: 1,
   opacity: 1,
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'center',
 }
 
 const getMotionTransition = dragging => ({
@@ -135,10 +138,10 @@ export const Item = forwardRef(({
     gridColumnStart: `span ${gridCols}`,
   }
 
-  const onResize = (e, direction, ref, d) => {
+  const onResizeStop = (e, direction, ref, d) => {
     const newWidth = width + d.width
     const newHeight = height + d.height
-    console.log('resizing', { width, height, item, direction, d, newWidth, newHeight })
+    console.log('onResizeStop', { width, height, item, direction, d, newWidth, newHeight })
     setWidth(width + d.width)
     setHeight(height + d.height)
   }
@@ -162,7 +165,7 @@ export const Item = forwardRef(({
       minWidth={defaultTileSize}
       size={{ width, height }}
       data-id="resizable-item-wrapper"
-      onResizeStop={onResize}
+      onResizeStop={onResizeStop}
       enable={{ bottomRight: true }}
       allowResizing={containerId === 'main'}
     >
@@ -186,7 +189,8 @@ export const Item = forwardRef(({
         {...props}
         tabIndex={!handle ? 0 : undefined}
       >
-        {item.value}
+        <span>{item.value}</span>
+        <span style={{ fontSize: 12 }}>{Math.round(width)}x{Math.round(height)}</span>
 
         {onRemove && <Remove className={styles.Remove} onClick={onRemove} />}
         {handle && <Handle isDragging={dragOverlay || dragging} {...handleProps} {...listeners} />}

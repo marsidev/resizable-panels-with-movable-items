@@ -35,6 +35,7 @@ $focused-outline-color: #4c9ffe;
     scaleX(var(--scale-x, 1)) scaleY(var(--scale-y, 1));
   transform-origin: 0 0;
   touch-action: manipulation;
+  font-size: 18px;
 
   &.fadeIn {
     animation: fadeIn 500ms ease;
