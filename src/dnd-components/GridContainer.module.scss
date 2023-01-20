@@ -1,0 +1,17 @@
+$default-cols: 2;
+
+.GridContainer {
+  // max-width: 800px;
+  display: grid;
+  grid-template-columns: repeat(var(--col-count, $default-cols), 1fr);
+  grid-gap: 8px;
+  padding: 32px;
+
+  @media (max-width: 850px) {
+    grid-template-columns: repeat(calc(var(--col-count, $default-cols) - 1), 1fr);
+  }
+
+  @media (max-width: 650px) {
+    grid-template-columns: repeat(calc(var(--col-count, $default-cols) - 2), 1fr);
+  }
+}

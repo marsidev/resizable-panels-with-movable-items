@@ -6,8 +6,7 @@ export const SortableItem = ({
   animateLayoutChanges,
   getNewIndex,
   handle,
-  id,
-  value,
+  item,
   index,
   onRemove,
   style,
@@ -26,7 +25,7 @@ export const SortableItem = ({
     transform,
     transition,
   } = useSortable({
-    id,
+    id: item.id,
     animateLayoutChanges,
     disabled,
     getNewIndex,
@@ -35,7 +34,7 @@ export const SortableItem = ({
   return (
     <Item
       ref={setNodeRef}
-      value={value}
+      item={item}
       disabled={disabled}
       dragging={isDragging}
       sorting={isSorting}
@@ -44,19 +43,16 @@ export const SortableItem = ({
       index={index}
       style={style({
         index,
-        id,
+        id: item.id,
         isDragging,
         isSorting,
         overIndex,
       })}
-      onRemove={onRemove ? () => onRemove(id) : undefined}
+      onRemove={onRemove ? () => onRemove(item.id) : undefined}
       transform={transform}
       transition={transition}
-      wrapperStyle={wrapperStyle?.({ index, isDragging, active, id })}
+      wrapperStyle={wrapperStyle?.({ index, isDragging, active, id: item.id })}
       listeners={listeners}
-      data-index={index}
-      data-id={id}
-      data-value={value}
       dragOverlay={!useDragOverlay && isDragging}
       {...attributes}
     />

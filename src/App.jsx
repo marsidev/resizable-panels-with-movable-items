@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import { DndContext, DragOverlay, KeyboardSensor, MeasuringStrategy, MouseSensor, TouchSensor, closestCorners, defaultDropAnimationSideEffects, useSensor, useSensors } from '@dnd-kit/core'
 import { defaultAnimateLayoutChanges, sortableKeyboardCoordinates } from '@dnd-kit/sortable'
 import { createPortal } from 'react-dom'
+import { useRef, useState } from 'react'
 import { Item } from '~/dnd-components'
 import { DnDPanel, ResizeHandle } from '~/panel-components'
 import { useStore } from '~/store'
@@ -16,14 +17,20 @@ const Container = styled.div`
   gap: 1rem;
 `
 
+const defaultTileWidth = 100
+const defaultGridGap = 8
+const tilesContainerPadding = 32
+
 const mainPanelProps = {
   containerId: 'main',
   wrapperStyle: ({ index }) => {
     if (index === 0) {
       return {
         fontSize: '2rem',
-        width: 200,
-        height: 200,
+        width: 208,
+        height: 208,
+        gridRowStart: 'span 2',
+        gridColumnStart: 'span 2',
       }
     }
 
@@ -65,6 +72,39 @@ function App() {
   const [moveMainItems, moveToolbarItems] = useStore(s => [s.moveMainItems, s.moveToolbarItems])
   const { toolbar: toolbarItems, main: mainItems } = items
 
+  const [panel1Cols, setPanel1Cols] = useState()
+  const [panel2Cols, setPanel2Cols] = useState()
+  const ref = useRef()
+  const resizerRef = useRef()
+  // const panel1Ref = useRef()
+  // const panel2Ref = useRef()
+
+  const onResizePanel = (panel1Size) => {
+    // const panel2Size = panel2Ref.current?.getSize()
+    const panel2Size = 100 - panel1Size
+    const containerWidth = ref.current?.clientWidth
+    const resizerWidth = resizerRef.current?.clientWidth
+    const panel1Width = (containerWidth - resizerWidth) * (panel1Size / 100)
+    const panel2Width = (containerWidth - resizerWidth) * (panel2Size / 100)
+
+    const panel1Columns = Math.floor(panel1Width / (defaultTileWidth + defaultGridGap + tilesContainerPadding / 2))
+    const panel2Columns = Math.floor(panel2Width / (defaultTileWidth + defaultGridGap + tilesContainerPadding / 2))
+
+    // console.log({
+    //   panel1Size: Math.floor(panel1Size),
+    //   panel2Size: Math.floor(panel2Size),
+    //   containerWidth: Math.floor(containerWidth),
+    //   resizerWidth: Math.floor(resizerWidth),
+    //   panel1Width: Math.floor(panel1Width),
+    //   panel2Width: Math.floor(panel2Width),
+    //   panel1Columns,
+    //   panel2Columns,
+    // })
+
+    setPanel1Cols(panel1Columns)
+    setPanel2Cols(panel2Columns)
+  }
+
   const getIndex = (id, containerId) => items[containerId].findIndex(item => item.id === id)
 
   const sensors = useSensors(
@@ -100,6 +140,7 @@ function App() {
   }
 
   function handleDragEnd({ active, over }) {
+    if (!active || !over) return
     const activeContainer = findContainer(active.id)
     const overContainer = findContainer(over.id)
 
@@ -179,20 +220,11 @@ function App() {
       ],
     }
 
-    // const newItems = {
-    //   ...items,
-    //   main: [
-    //     ...items.main.slice(0, newIndex),
-    //     items.toolbar[activeIndex],
-    //     ...items.main.slice(newIndex),
-    //   ],
-    // }
-
     setItems(newItems)
   }
 
   return (
-    <Container>
+    <Container ref={ref}>
       <DndContext
         // announcements={defaultAnnouncements}
         sensors={sensors}
@@ -203,14 +235,14 @@ function App() {
         measuring={{ droppable: { strategy: MeasuringStrategy.Always } }}
       >
         <PanelGroup autoSaveId="example-v5" direction="horizontal">
-          <Panel defaultSize={80} order={1}>
-            <DnDPanel {...mainPanelProps} items={mainItems} handleRemove={removeMainItem} />
+          <Panel onResize={size => onResizePanel(size)} defaultSize={80} order={1}>
+            <DnDPanel columns={panel1Cols} {...mainPanelProps} items={mainItems} handleRemove={removeMainItem} />
           </Panel>
 
-          <ResizeHandle />
+          <ResizeHandle ref={resizerRef} />
 
-          <Panel order={2}>
-            <DnDPanel {...toolbarPanelProps} items={toolbarItems} handleRemove={removeToolbarItem} />
+          <Panel minSize={10} order={2}>
+            <DnDPanel columns={panel2Cols} {...toolbarPanelProps} items={toolbarItems} handleRemove={removeToolbarItem} />
           </Panel>
         </PanelGroup>
 
@@ -223,9 +255,8 @@ function App() {
             {activeItem
               ? (
                 <Item
-                  value={activeItem.value}
+                  item={activeItem}
                   handle={true}
-                  data-id={activeItem.id}
                   wrapperStyle={{
                     width: 100,
                     height: 100,

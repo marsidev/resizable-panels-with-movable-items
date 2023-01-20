@@ -1,4 +1,4 @@
-import { forwardRef, memo } from 'react'
+import { forwardRef } from 'react'
 import classNames from 'classnames'
 import { motion } from 'framer-motion'
 import styles from './Item.module.scss'
@@ -24,7 +24,7 @@ import { Handle, Remove } from '~/dnd-components'
 //   },
 // })
 
-export const Item = memo(forwardRef(({
+export const Item = forwardRef(({
   color,
   dragOverlay,
   dragging,
@@ -41,7 +41,7 @@ export const Item = memo(forwardRef(({
   style,
   transition,
   transform,
-  value,
+  item,
   wrapperStyle,
   ...props
 }, ref) => {
@@ -103,15 +103,18 @@ export const Item = memo(forwardRef(({
         //     : initialMotionAnimate
         // }
         // transition={motionTransition(dragging)}
+        data-id={item.id}
+        data-value={item.value}
+        data-index={index}
         {...(!handle ? listeners : undefined)}
         {...props}
         tabIndex={!handle ? 0 : undefined}
       >
-        {value}
+        {item.value}
 
         {onRemove && <Remove className={styles.Remove} onClick={onRemove} />}
         {handle && <Handle isDragging={dragOverlay || dragging} {...handleProps} {...listeners} />}
       </motion.div>
     </li>
   )
-}))
+})

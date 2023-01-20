@@ -4,16 +4,15 @@ import {
 } from '@dnd-kit/sortable'
 import { useDroppable } from '@dnd-kit/core'
 import styled from 'styled-components'
-import { FlexContainer, SortableItem } from '~/dnd-components'
+import { GridContainer, SortableItem } from '~/dnd-components'
 
-export const MainContainer = styled.div`
+export const PanelContainer = styled.div`
   display: flex;
   flex-direction: row;
   align-items: flex-start;
   max-height: calc(100vh);
   background-color: var(--color-panel-background);
-  justify-content: center;
-  padding: 16px;
+  justify-content: flex-start;
   height: 100%;
   border-radius: 0.5rem;
   overflow-y: auto;
@@ -31,6 +30,7 @@ export const DnDPanel = (props) => {
     containerId,
     items,
     handleRemove,
+    columns,
   } = props
   const {
     setNodeRef,
@@ -39,14 +39,13 @@ export const DnDPanel = (props) => {
   })
 
   return (
-    <MainContainer data-id="panel-container">
+    <PanelContainer data-id="panel-container">
       <SortableContext id={containerId} items={items} strategy={strategy}>
-        <FlexContainer ref={setNodeRef}>
+        <GridContainer ref={setNodeRef} columns={columns}>
           {items.map((item, index) => (
             <SortableItem
+              item={item}
               key={item.id}
-              id={item.id}
-              value={item.value}
               handle={handle}
               index={index}
               style={getItemStyles}
@@ -58,8 +57,8 @@ export const DnDPanel = (props) => {
               getNewIndex={getNewIndex}
             />
           ))}
-        </FlexContainer>
+        </GridContainer>
       </SortableContext>
-    </MainContainer>
+    </PanelContainer>
   )
 }

@@ -1,13 +1,14 @@
 import { PanelResizeHandle } from 'react-resizable-panels'
+import { forwardRef } from 'react'
 import styles from './ResizeHandle.module.css'
 
-export function ResizeHandle({ className = '', id }) {
+export const ResizeHandle = forwardRef(({ className = '', id }, ref) => {
   return (
     <PanelResizeHandle
       className={[styles.ResizeHandleOuter, className].join(' ')}
       id={id}
     >
-      <div className={styles.ResizeHandleInner}>
+      <div ref={ref} className={styles.ResizeHandleInner}>
         <svg className={styles.Icon} viewBox="0 0 24 24">
           <path
             fill="currentColor"
@@ -17,4 +18,4 @@ export function ResizeHandle({ className = '', id }) {
       </div>
     </PanelResizeHandle>
   )
-}
+})
