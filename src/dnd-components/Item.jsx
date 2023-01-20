@@ -1,9 +1,13 @@
-import { forwardRef } from 'react'
+import { forwardRef, useState } from 'react'
 import classNames from 'classnames'
 import { motion } from 'framer-motion'
 // import { CSS } from '@dnd-kit/utilities'
+import { Resizable } from 're-resizable'
 import styles from './Item.module.scss'
 import { Handle, Remove } from '~/dnd-components'
+
+const defaultTileSize = 100
+const defaultGridGap = 8
 
 const initialMotionAnimate = {
   x: 0,
@@ -40,6 +44,49 @@ const getMotionAnimate = (transform, dragging) => {
     : initialMotionAnimate
 }
 
+const ResizableLi = forwardRef((props, ref) => {
+  const { onResize, style, className, children, width, height, ...rest } = props
+
+  const columns = Math.ceil(width / (defaultTileSize + defaultGridGap))
+  const gridRowStart = `span ${columns}`
+  const gridColumnStart = `span ${columns}`
+
+  return (
+    <Resizable
+      as='li'
+      className={className}
+      defaultSize={{
+        width: defaultTileSize,
+        height: defaultTileSize,
+      }}
+      minHeight={defaultTileSize}
+      minWidth={defaultTileSize}
+      size={{ width, height }}
+      data-id="resizable-item-wrapper"
+      style={{
+        ...style,
+        gridRowStart,
+        gridColumnStart,
+      }}
+      onResizeStop={onResize}
+      enable={{ top: false, right: false, bottom: false, left: false, topRight: false, bottomRight: true, bottomLeft: false, topLeft: false }}
+    >
+      <div
+        data-id="item-with-ref"
+        ref={ref}
+        style={{
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+        }}
+        {...rest}
+      >
+        {children}
+      </div>
+    </Resizable>
+  )
+})
+
 export const Item = forwardRef(({
   color,
   dragOverlay,
@@ -48,7 +95,6 @@ export const Item = forwardRef(({
   fadeIn,
   handle,
   handleProps,
-  height,
   index,
   listeners,
   onRemove,
@@ -60,6 +106,9 @@ export const Item = forwardRef(({
   wrapperStyle,
   ...props
 }, ref) => {
+  const [width, setWidth] = useState(item.style.width)
+  const [height, setHeight] = useState(item.style.height)
+
   const liStyle = {
     ...wrapperStyle,
     ...item.style,
@@ -90,8 +139,17 @@ export const Item = forwardRef(({
   //   }
   // }, [dragging, sorting, liStyle, item])
 
+  const onResize = (e, direction, ref, d) => {
+    const newWidth = width + d.width
+    const newHeight = height + d.height
+    console.log('resizing', { width, height, item, direction, d, newWidth, newHeight })
+    setWidth(width + d.width)
+    setHeight(height + d.height)
+  }
+
   return (
-    <li
+    <ResizableLi
+      // as="li"
       className={classNames(
         styles.Wrapper,
         fadeIn && styles.fadeIn,
@@ -100,6 +158,9 @@ export const Item = forwardRef(({
       )}
       style={liStyle}
       ref={ref}
+      onResize={onResize}
+      width={width}
+      height={height}
     >
       <motion.div
         className={classNames(
@@ -126,6 +187,6 @@ export const Item = forwardRef(({
         {onRemove && <Remove className={styles.Remove} onClick={onRemove} />}
         {handle && <Handle isDragging={dragOverlay || dragging} {...handleProps} {...listeners} />}
       </motion.div>
-    </li>
+    </ResizableLi>
   )
 })
