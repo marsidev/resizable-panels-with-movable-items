@@ -43,6 +43,9 @@ const getMotionAnimate = (transform, dragging) => {
       //   ? '0 0 0 1px rgba(63, 63, 68, 0.05), 0px 15px 15px 0 rgba(34, 33, 81, 0.25)'
       //   : undefined,
       opacity: dragging ? 0.5 : 1,
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
     }
     : initialMotionAnimate
 }
