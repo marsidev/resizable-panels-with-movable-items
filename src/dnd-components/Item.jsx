@@ -1,9 +1,9 @@
 import { forwardRef, useState } from 'react'
 import classNames from 'classnames'
 import { motion } from 'framer-motion'
-// import { CSS } from '@dnd-kit/utilities'
 import { Resizable } from 're-resizable'
 import styles from './Item.module.scss'
+import { SouthEastResizeIcon } from './SouthEastResizeIcon'
 import { Handle, Remove } from '~/dnd-components'
 
 const defaultTileSize = 100
@@ -48,6 +48,8 @@ const ResizableWrapper = forwardRef((props, ref) => {
   const { children, allowResizing, className, style, 'data-id': dataId, ...resizableProps } = props
   const commonProps = { className, style, 'data-id': dataId }
 
+  const [isHovering, setIsHovering] = useState(false)
+
   if (!allowResizing) {
     return (
       <div ref={ref} {...commonProps}>
@@ -57,7 +59,13 @@ const ResizableWrapper = forwardRef((props, ref) => {
   }
 
   return (
-    <Resizable {...commonProps} {...resizableProps} >
+    <Resizable
+      {...commonProps}
+      {...resizableProps}
+      handleComponent={{
+        bottomRight: isHovering ? <SouthEastResizeIcon /> : null,
+      }}
+    >
       <div
         data-id="item-with-ref"
         ref={ref}
@@ -66,6 +74,8 @@ const ResizableWrapper = forwardRef((props, ref) => {
           height: '100%',
           display: 'flex',
         }}
+        onMouseEnter={() => setIsHovering(true)}
+        onMouseLeave={() => setIsHovering(false)}
       >
         {children}
       </div>
@@ -123,15 +133,7 @@ export const Item = forwardRef(({
     opacity: 1,
     gridRowStart: `span ${gridRows}`,
     gridColumnStart: `span ${gridCols}`,
-    width: `${width}px`,
-    height: `${height}px`,
   }
-
-  // useEffect(() => {
-  //   if ((dragging || sorting) && (item.value === 17 || item.value === 32)) {
-  //     console.log('item dragging|sorting', { liStyle, item, wrapperStyle, sorting, dragging, transform })
-  //   }
-  // }, [dragging, sorting, liStyle, item])
 
   const onResize = (e, direction, ref, d) => {
     const newWidth = width + d.width
@@ -163,7 +165,6 @@ export const Item = forwardRef(({
       onResizeStop={onResize}
       enable={{ bottomRight: true }}
       allowResizing={containerId === 'main'}
-      // enable={{ top: false, right: false, bottom: false, left: false, topRight: false, bottomRight: true, bottomLeft: false, topLeft: false }}
     >
       <motion.div
         className={classNames(
