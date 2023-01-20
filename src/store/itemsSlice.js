@@ -1,13 +1,26 @@
 import { arrayMove } from '@dnd-kit/sortable'
 import { v4 as uuidv4 } from 'uuid'
-const MAX_ITEMS = 40
+const MAX_ITEMS = 16
 
 const defaultItems = {
-  main: [],
+  main: Array.from({ length: MAX_ITEMS }, (_, i) => {
+    return {
+      id: uuidv4(),
+      value: i + MAX_ITEMS + 1,
+      style: {
+        width: (i + MAX_ITEMS + 1) % 4 === 0 ? 208 : 100,
+        height: (i + MAX_ITEMS + 1) % 4 === 0 ? 208 : 100,
+      },
+    }
+  }),
   toolbar: Array.from({ length: MAX_ITEMS }, (_, i) => {
     return {
       id: uuidv4(),
       value: i + 1,
+      style: {
+        width: 100,
+        height: 100,
+      },
     }
   }),
 }

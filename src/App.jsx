@@ -2,9 +2,9 @@ import { Panel, PanelGroup } from 'react-resizable-panels'
 import styled from 'styled-components'
 import { DndContext, DragOverlay, KeyboardSensor, MeasuringStrategy, MouseSensor, TouchSensor, closestCorners, defaultDropAnimationSideEffects, useSensor, useSensors } from '@dnd-kit/core'
 import { defaultAnimateLayoutChanges, sortableKeyboardCoordinates } from '@dnd-kit/sortable'
-import { createPortal } from 'react-dom'
+// import { createPortal } from 'react-dom'
 import { useRef, useState } from 'react'
-import { Item } from '~/dnd-components'
+// import { Item } from '~/dnd-components'
 import { DnDPanel, ResizeHandle } from '~/panel-components'
 import { useStore } from '~/store'
 
@@ -23,20 +23,10 @@ const tilesContainerPadding = 32
 
 const mainPanelProps = {
   containerId: 'main',
-  wrapperStyle: ({ index }) => {
-    if (index === 0) {
-      return {
-        fontSize: '2rem',
-        width: 208,
-        height: 208,
-        gridRowStart: 'span 2',
-        gridColumnStart: 'span 2',
-      }
-    }
-
+  wrapperStyle: ({ index, isDragging, active, item }) => {
     return {
-      width: 100,
-      height: 100,
+      gridRowStart: item.style.width >= 200 ? 'span 2' : undefined,
+      gridColumnStart: item.style.width >= 200 ? 'span 2' : undefined,
     }
   },
   animateLayoutChanges: args => defaultAnimateLayoutChanges({ ...args, wasDragging: true }),
@@ -46,24 +36,21 @@ const mainPanelProps = {
 
 const toolbarPanelProps = {
   containerId: 'toolbar',
-  wrapperStyle: () => ({
-    width: 100,
-    height: 100,
-  }),
+  wrapperStyle: ({ index, isDragging, active, item }) => ({}),
   animateLayoutChanges: args => defaultAnimateLayoutChanges({ ...args, wasDragging: true }),
   removable: false,
   handle: true,
 }
 
-const dropAnimationConfig = {
-  sideEffects: defaultDropAnimationSideEffects({
-    styles: {
-      active: {
-        opacity: '0.5',
-      },
-    },
-  }),
-}
+// const dropAnimationConfig = {
+//   sideEffects: defaultDropAnimationSideEffects({
+//     styles: {
+//       active: {
+//         opacity: '0.5',
+//       },
+//     },
+//   }),
+// }
 
 function App() {
   const [activeItem, setActiveItem] = useStore(s => [s.activeItem, s.setActiveItem])
@@ -76,8 +63,6 @@ function App() {
   const [panel2Cols, setPanel2Cols] = useState()
   const ref = useRef()
   const resizerRef = useRef()
-  // const panel1Ref = useRef()
-  // const panel2Ref = useRef()
 
   const onResizePanel = (panel1Size) => {
     // const panel2Size = panel2Ref.current?.getSize()
@@ -89,17 +74,6 @@ function App() {
 
     const panel1Columns = Math.floor(panel1Width / (defaultTileWidth + defaultGridGap + tilesContainerPadding / 2))
     const panel2Columns = Math.floor(panel2Width / (defaultTileWidth + defaultGridGap + tilesContainerPadding / 2))
-
-    // console.log({
-    //   panel1Size: Math.floor(panel1Size),
-    //   panel2Size: Math.floor(panel2Size),
-    //   containerWidth: Math.floor(containerWidth),
-    //   resizerWidth: Math.floor(resizerWidth),
-    //   panel1Width: Math.floor(panel1Width),
-    //   panel2Width: Math.floor(panel2Width),
-    //   panel1Columns,
-    //   panel2Columns,
-    // })
 
     setPanel1Cols(panel1Columns)
     setPanel2Cols(panel2Columns)
@@ -246,7 +220,7 @@ function App() {
           </Panel>
         </PanelGroup>
 
-        {createPortal(
+        {/* {createPortal(
           <DragOverlay
             adjustScale={true}
             dropAnimation={dropAnimationConfig}
@@ -258,8 +232,8 @@ function App() {
                   item={activeItem}
                   handle={true}
                   wrapperStyle={{
-                    width: 100,
-                    height: 100,
+                    // width: activeItem.style.width,
+                    // height: activeItem.style.height,
                   }}
                   dragOverlay
                 />
@@ -267,7 +241,23 @@ function App() {
               : null}
           </DragOverlay>,
           document.body,
-        )}
+        )} */}
+
+        {/* <DragOverlay
+          adjustScale={true}
+          dropAnimation={dropAnimationConfig}
+        >
+          {activeItem
+            ? (
+              <Item
+                item={activeItem}
+                handle={true}
+                wrapperStyle={{}}
+                dragOverlay
+              />
+            )
+            : null}
+        </DragOverlay> */}
       </DndContext>
     </Container>
   )

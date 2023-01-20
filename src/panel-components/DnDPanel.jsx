@@ -4,6 +4,7 @@ import {
 } from '@dnd-kit/sortable'
 import { useDroppable } from '@dnd-kit/core'
 import styled from 'styled-components'
+// import { useEffect } from 'react'
 import { GridContainer, SortableItem } from '~/dnd-components'
 
 export const PanelContainer = styled.div`
@@ -34,9 +35,18 @@ export const DnDPanel = (props) => {
   } = props
   const {
     setNodeRef,
+    // active,
+    // over,
+    // rect,
   } = useDroppable({
     id: containerId,
   })
+
+  // const activeItem = items.find(item => item.id === active?.id)
+  // const overItem = items.find(item => item.id === over?.id)
+  // useEffect(() => {
+  //   active && over && console.log('useDroppable', { overItem, activeItem, rect })
+  // }, [active, over, rect])
 
   return (
     <PanelContainer data-id="panel-container">
@@ -45,6 +55,7 @@ export const DnDPanel = (props) => {
           {items.map((item, index) => (
             <SortableItem
               item={item}
+              items={items}
               key={item.id}
               handle={handle}
               index={index}
