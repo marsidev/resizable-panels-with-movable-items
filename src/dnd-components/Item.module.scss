@@ -131,9 +131,17 @@ $focused-outline-color: #4c9ffe;
     .Remove {
       visibility: visible;
     }
+
+    .DragHandle {
+      visibility: visible;
+    }
   }
 }
 
 .Remove {
+  visibility: hidden;
+}
+
+.DragHandle {
   visibility: hidden;
 }

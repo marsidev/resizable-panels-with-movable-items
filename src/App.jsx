@@ -208,7 +208,7 @@ function App() {
         onDragEnd={handleDragEnd}
         measuring={{ droppable: { strategy: MeasuringStrategy.Always } }}
       >
-        <PanelGroup autoSaveId="example-v5" direction="horizontal">
+        <PanelGroup autoSaveId="example-v6" direction="horizontal">
           <Panel onResize={size => onResizePanel(size)} defaultSize={80} order={1}>
             <DnDPanel columns={panel1Cols} {...mainPanelProps} items={mainItems} handleRemove={removeMainItem} />
           </Panel>

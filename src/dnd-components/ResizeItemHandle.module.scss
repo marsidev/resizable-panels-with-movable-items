@@ -1,0 +1,74 @@
+// bottom handle
+.BottomHandleResize {
+  position: absolute;
+  width: 100%;
+  border-bottom: 2px solid var(--color-panel-background);
+  border-color: rgba(0, 0, 0, 0.5);
+  visibility: hidden;
+
+  &[data-visible="true"] {
+    visibility: visible;
+  }
+}
+
+.BottomHandleResizeWrapper {
+  width: 2rem !important;
+  left: 50% !important;
+  transform: translateX(-50%);
+}
+
+.BottomHandleResizeWrapper:hover .BottomHandleResize {
+  visibility: visible;
+}
+
+
+// right handle
+.RightHandleResize {
+  position: absolute;
+  height: 100%;
+  border-right: 2px solid var(--color-panel-background);
+  border-color: rgba(0, 0, 0, 0.5);
+  visibility: hidden;
+
+  &[data-visible="true"] {
+    visibility: visible;
+  }
+}
+
+.RightHandleResizeWrapper {
+  height: 2rem !important;
+  top: 50% !important;
+  transform: translateY(-50%);
+}
+
+.RightHandleResizeWrapper:hover .RightHandleResize {
+  visibility: visible;
+}
+
+
+// bottom right handle
+.BottomRightHandleResize {
+  position: absolute;
+  width: 1rem;
+  height: 1rem;
+  border-bottom: 2px solid var(--color-panel-background);
+  border-right: 2px solid var(--color-panel-background);
+  border-color: rgba(0, 0, 0, 0.5);
+  visibility: hidden;
+
+  &[data-visible="true"] {
+    visibility: visible;
+  }
+}
+
+.BottomRightHandleResizeWrapper {
+  bottom: 0 !important;
+  right: 0 !important;
+}
+
+.BottomRightHandleResizeWrapper:hover .BottomRightHandleResize {
+  visibility: visible;
+}
+
+
+

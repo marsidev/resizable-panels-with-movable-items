@@ -1,10 +1,8 @@
 import { forwardRef, useState } from 'react'
-import classNames from 'classnames'
 import { motion } from 'framer-motion'
-import { Resizable } from 're-resizable'
+import cn from 'classnames'
 import styles from './Item.module.scss'
-import { SouthEastResizeIcon } from './SouthEastResizeIcon'
-import { Handle, Remove } from '~/dnd-components'
+import { Handle as DragHandle, Remove, ResizableItemWrapper } from '~/dnd-components'
 
 const defaultTileSize = 100
 const defaultGridGap = 8
@@ -49,45 +47,6 @@ const getMotionAnimate = (transform, dragging) => {
     }
     : initialMotionAnimate
 }
-
-const ResizableWrapper = forwardRef((props, ref) => {
-  const { children, allowResizing, className, style, 'data-id': dataId, ...resizableProps } = props
-  const commonProps = { className, style, 'data-id': dataId }
-
-  const [isHovering, setIsHovering] = useState(false)
-
-  if (!allowResizing) {
-    return (
-      <div ref={ref} {...commonProps}>
-        {children}
-      </div>
-    )
-  }
-
-  return (
-    <Resizable
-      {...commonProps}
-      {...resizableProps}
-      handleComponent={{
-        bottomRight: isHovering ? <SouthEastResizeIcon /> : null,
-      }}
-    >
-      <div
-        data-id="item-with-ref"
-        ref={ref}
-        style={{
-          width: '100%',
-          height: '100%',
-          display: 'flex',
-        }}
-        onMouseEnter={() => setIsHovering(true)}
-        onMouseLeave={() => setIsHovering(false)}
-      >
-        {children}
-      </div>
-    </Resizable>
-  )
-})
 
 export const Item = forwardRef(({
   color,
@@ -150,9 +109,9 @@ export const Item = forwardRef(({
   }
 
   return (
-    <ResizableWrapper
+    <ResizableItemWrapper
       as='li'
-      className={classNames(
+      className={cn(
         styles.Wrapper,
         fadeIn && styles.fadeIn,
         sorting && styles.sorting,
@@ -169,11 +128,11 @@ export const Item = forwardRef(({
       size={{ width, height }}
       data-id="resizable-item-wrapper"
       onResizeStop={onResizeStop}
-      enable={{ bottomRight: true }}
+      enable={{ bottomRight: true, bottom: true, right: true }}
       allowResizing={containerId === 'main'}
     >
       <motion.div
-        className={classNames(
+        className={cn(
           styles.Item,
           dragging && styles.dragging,
           handle && styles.withHandle,
@@ -196,8 +155,8 @@ export const Item = forwardRef(({
         <span style={{ fontSize: 12 }}>{Math.round(width)}x{Math.round(height)}</span>
 
         {onRemove && <Remove className={styles.Remove} onClick={onRemove} />}
-        {handle && <Handle isDragging={dragOverlay || dragging} {...handleProps} {...listeners} />}
+        {handle && <DragHandle className={styles.DragHandle} isDragging={dragOverlay || dragging} {...handleProps} {...listeners} />}
       </motion.div>
-    </ResizableWrapper>
+    </ResizableItemWrapper>
   )
 })
