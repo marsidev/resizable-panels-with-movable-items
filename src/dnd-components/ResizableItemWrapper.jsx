@@ -1,4 +1,5 @@
 import { forwardRef, useState } from 'react'
+import { Resizable } from 're-resizable'
 import resizeStyles from './ResizeItemHandle.module.scss'
 
 export const ResizableItemWrapper = forwardRef((props, ref) => {
