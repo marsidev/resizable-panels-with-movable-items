@@ -1,6 +1,7 @@
 import { forwardRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import cn from 'classnames'
+import useMeasure from 'react-use-measure'
 import styles from './Item.module.scss'
 import { Handle as DragHandle, Remove, ResizableItemWrapper } from '~/dnd-components'
 import { useStore } from '~/store'
@@ -68,11 +69,12 @@ export const Item = forwardRef(({
   wrapperStyle,
   containerId,
   ...props
-}, ref) => {
+}, forwardedRef) => {
   const incrementResizeCount = useStore(s => s.incrementMainItemResizeCount)
 
   const [width, setWidth] = useState(item.style.width)
   const [height, setHeight] = useState(item.style.height)
+  const [measureRef, bounds] = useMeasure()
   // const [isResizing, setIsResizing] = useState(false)
 
   const gridCols = Math.ceil(width / (defaultTileSize + defaultGridGap))
@@ -120,7 +122,6 @@ export const Item = forwardRef(({
 
   return (
     <ResizableItemWrapper
-      as='li'
       data-resize-count={item.resizeCount}
       className={cn(
         styles.Wrapper,
@@ -129,7 +130,7 @@ export const Item = forwardRef(({
         dragOverlay && styles.dragOverlay,
       )}
       style={liStyle}
-      ref={ref}
+      ref={forwardedRef}
       defaultSize={{
         width: defaultTileSize,
         height: defaultTileSize,
@@ -142,9 +143,12 @@ export const Item = forwardRef(({
       // onResizeStart={() => setIsResizing(true)}
       enable={{ bottomRight: true, bottom: true, right: true }}
       allowResizing={containerId === 'main'}
+      bounds={bounds}
     >
       <motion.div
+        ref={measureRef}
         key={`${item.id}_v${item.resizeCount}`}
+        data-id={`${item.id}_v${item.resizeCount}`}
         className={cn(
           styles.Item,
           dragging && styles.dragging,
@@ -153,11 +157,14 @@ export const Item = forwardRef(({
           disabled && styles.disabled,
           color && styles.color,
         )}
-        style={style}
+        style={{
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+        }}
         layoutId={item.id}
         animate={getMotionAnimate(transform, dragging)}
         transition={getMotionTransition(dragging)}
-        data-id={item.id}
         data-value={item.value}
         data-index={index}
         data-resize-count={item.resizeCount}
@@ -166,7 +173,7 @@ export const Item = forwardRef(({
         tabIndex={!handle ? 0 : undefined}
       >
         <span>{item.value}</span>
-        <span style={{ fontSize: 12 }}>{Math.round(width)}x{Math.round(height)}</span>
+        <span style={{ fontSize: 12 }}>{Math.round(bounds.width)}x{Math.round(bounds.height)}</span>
 
         {onRemove && <Remove className={styles.Remove} onClick={onRemove} />}
 
