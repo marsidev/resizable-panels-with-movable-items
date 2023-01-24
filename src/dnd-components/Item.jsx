@@ -70,10 +70,13 @@ export const Item = forwardRef(({
   const [measureRef, bounds] = useMeasure()
   const [isResizing, setIsResizing] = useState(false)
   const item = getItem(itemId, containerId)
-  const { width, height } = item.style
+
+  const { width, height } = item?.style ?? {}
 
   const gridCols = useMemo(() => Math.ceil(width / (minTileSize + defaultGridGap)), [width])
   const gridRows = useMemo(() => Math.ceil(height / (minTileSize + defaultGridGap)), [height])
+
+  if (!item) return null
 
   const liStyle = {
     ...wrapperStyle,
