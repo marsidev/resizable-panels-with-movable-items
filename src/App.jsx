@@ -2,9 +2,8 @@ import { Panel, PanelGroup } from 'react-resizable-panels'
 import styled from 'styled-components'
 import { DndContext, KeyboardSensor, MeasuringStrategy, MouseSensor, TouchSensor, closestCorners, useSensor, useSensors } from '@dnd-kit/core'
 import { defaultAnimateLayoutChanges, sortableKeyboardCoordinates } from '@dnd-kit/sortable'
-// import { createPortal } from 'react-dom'
-import { useRef, useState } from 'react'
-// import { Item } from '~/dnd-components'
+import { useEffect, useState } from 'react'
+import useMeasure from 'react-use-measure'
 import { DnDPanel, ResizeHandle } from '~/panel-components'
 import { useStore } from '~/store'
 
@@ -17,7 +16,7 @@ const Container = styled.div`
   gap: 1rem;
 `
 
-const defaultTileSize = 100
+const minTileSize = 100
 const defaultGridGap = 8
 const tilesContainerPadding = 32
 
@@ -61,23 +60,35 @@ function App() {
 
   const [panel1Cols, setPanel1Cols] = useState()
   const [panel2Cols, setPanel2Cols] = useState()
-  const ref = useRef()
-  const resizerRef = useRef()
 
-  const onResizePanel = (panel1Size) => {
-    // const panel2Size = panel2Ref.current?.getSize()
-    const panel2Size = 100 - panel1Size
-    const containerWidth = ref.current?.clientWidth
-    const resizerWidth = resizerRef.current?.clientWidth
-    const panel1Width = (containerWidth - resizerWidth) * (panel1Size / 100)
-    const panel2Width = (containerWidth - resizerWidth) * (panel2Size / 100)
+  const [resizerRef, resizerBounds] = useMeasure()
+  const [p1Ref, p1Bounds] = useMeasure()
+  const [p2Ref, p2Bounds] = useMeasure()
+  const [containerRef, containerBounds] = useMeasure()
 
-    const panel1Columns = Math.floor(panel1Width / (defaultTileSize + defaultGridGap + tilesContainerPadding / 2))
-    const panel2Columns = Math.floor(panel2Width / (defaultTileSize + defaultGridGap + tilesContainerPadding / 2))
+  // measure all in an useEffect using useMeasure hook and ref
+  useEffect(() => {
+    const containerWidth = containerBounds.width
+    const resizerWidth = resizerBounds.width
+    const p1Width = p1Bounds.width
+    const p2Width = p2Bounds.width
+
+    const panel1Columns = Math.floor((p1Width - tilesContainerPadding) / (minTileSize + defaultGridGap))
+    const panel2Columns = Math.floor((p2Width - tilesContainerPadding) / (minTileSize + defaultGridGap))
+
+    console.log({
+      containerWidth,
+      p1Width,
+      resizerWidth,
+      p2Width,
+      'p1 + resizer + p2': p1Width + resizerWidth + p2Width,
+      panel1Columns,
+      panel2Columns,
+    })
 
     setPanel1Cols(panel1Columns)
     setPanel2Cols(panel2Columns)
-  }
+  }, [p1Bounds, containerBounds])
 
   const getIndex = (id, containerId) => items[containerId].findIndex(item => item.id === id)
 
@@ -198,7 +209,7 @@ function App() {
   }
 
   return (
-    <Container ref={ref}>
+    <Container ref={containerRef}>
       <DndContext
         // announcements={defaultAnnouncements}
         sensors={sensors}
@@ -209,14 +220,14 @@ function App() {
         measuring={{ droppable: { strategy: MeasuringStrategy.Always } }}
       >
         <PanelGroup autoSaveId="example-v6" direction="horizontal">
-          <Panel onResize={size => onResizePanel(size)} defaultSize={80} order={1}>
-            <DnDPanel columns={panel1Cols} {...mainPanelProps} items={mainItems} handleRemove={removeMainItem} />
+          <Panel defaultSize={80} order={1}>
+            <DnDPanel ref={p1Ref} columns={panel1Cols} {...mainPanelProps} items={mainItems} handleRemove={removeMainItem} />
           </Panel>
 
           <ResizeHandle ref={resizerRef} />
 
           <Panel minSize={10} order={2}>
-            <DnDPanel columns={panel2Cols} {...toolbarPanelProps} items={toolbarItems} handleRemove={removeToolbarItem} />
+            <DnDPanel ref={p2Ref} columns={panel2Cols} {...toolbarPanelProps} items={toolbarItems} handleRemove={removeToolbarItem} />
           </Panel>
         </PanelGroup>
 

@@ -1,6 +1,7 @@
 import { SortableContext, rectSortingStrategy } from '@dnd-kit/sortable'
 import { useDroppable } from '@dnd-kit/core'
 import styled from 'styled-components'
+import { forwardRef } from 'react'
 import { GridContainer, SortableItem } from '~/dnd-components'
 
 export const PanelContainer = styled.div`
@@ -15,7 +16,7 @@ export const PanelContainer = styled.div`
   overflow-y: auto;
 `
 
-export const DnDPanel = (props) => {
+export const DnDPanel = forwardRef((props, ref) => {
   const {
     animateLayoutChanges,
     getItemStyles = () => ({}),
@@ -36,7 +37,7 @@ export const DnDPanel = (props) => {
   })
 
   return (
-    <PanelContainer data-id="panel-container">
+    <PanelContainer ref={ref} data-id="panel-container">
       <SortableContext id={containerId} items={items} strategy={strategy}>
         <GridContainer ref={setNodeRef} columns={columns}>
           {items.map((item, index) => (
@@ -60,4 +61,4 @@ export const DnDPanel = (props) => {
       </SortableContext>
     </PanelContainer>
   )
-}
+})
