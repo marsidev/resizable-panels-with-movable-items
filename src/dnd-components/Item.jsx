@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import cn from 'classnames'
 import styles from './Item.module.scss'
 import { Handle as DragHandle, Remove, ResizableItemWrapper } from '~/dnd-components'
+import { useStore } from '~/store'
 
 const defaultTileSize = 100
 const defaultGridGap = 8
@@ -68,8 +69,11 @@ export const Item = forwardRef(({
   containerId,
   ...props
 }, ref) => {
+  const incrementResizeCount = useStore(s => s.incrementMainItemResizeCount)
+
   const [width, setWidth] = useState(item.style.width)
   const [height, setHeight] = useState(item.style.height)
+  // const [isResizing, setIsResizing] = useState(false)
 
   const gridCols = Math.ceil(width / (defaultTileSize + defaultGridGap))
   const gridRows = Math.ceil(height / (defaultTileSize + defaultGridGap))
@@ -101,16 +105,23 @@ export const Item = forwardRef(({
   }
 
   const onResizeStop = (e, direction, ref, d) => {
-    const newWidth = width + d.width
-    const newHeight = height + d.height
-    console.log('onResizeStop', { width, height, item, direction, d, newWidth, newHeight })
-    setWidth(width + d.width)
-    setHeight(height + d.height)
+    if (d.width !== 0 || d.height !== 0) {
+      const newWidth = width + d.width
+      const newHeight = height + d.height
+      console.log('onResizeStop', { width, height, item, direction, d, newWidth, newHeight })
+
+      setWidth(width + d.width)
+      setHeight(height + d.height)
+      incrementResizeCount(item.id)
+    }
+
+    // setIsResizing(false)
   }
 
   return (
     <ResizableItemWrapper
       as='li'
+      data-resize-count={item.resizeCount}
       className={cn(
         styles.Wrapper,
         fadeIn && styles.fadeIn,
@@ -128,10 +139,12 @@ export const Item = forwardRef(({
       size={{ width, height }}
       data-id="resizable-item-wrapper"
       onResizeStop={onResizeStop}
+      // onResizeStart={() => setIsResizing(true)}
       enable={{ bottomRight: true, bottom: true, right: true }}
       allowResizing={containerId === 'main'}
     >
       <motion.div
+        key={`${item.id}_v${item.resizeCount}`}
         className={cn(
           styles.Item,
           dragging && styles.dragging,
@@ -147,6 +160,7 @@ export const Item = forwardRef(({
         data-id={item.id}
         data-value={item.value}
         data-index={index}
+        data-resize-count={item.resizeCount}
         {...(!handle ? listeners : undefined)}
         {...props}
         tabIndex={!handle ? 0 : undefined}
@@ -155,7 +169,15 @@ export const Item = forwardRef(({
         <span style={{ fontSize: 12 }}>{Math.round(width)}x{Math.round(height)}</span>
 
         {onRemove && <Remove className={styles.Remove} onClick={onRemove} />}
-        {handle && <DragHandle className={styles.DragHandle} isDragging={dragOverlay || dragging} {...handleProps} {...listeners} />}
+
+        {handle && (
+          <DragHandle
+            className={styles.DragHandle}
+            isDragging={dragOverlay || dragging}
+            {...handleProps}
+            {...listeners}
+          />
+        )}
       </motion.div>
     </ResizableItemWrapper>
   )

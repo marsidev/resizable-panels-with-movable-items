@@ -1,6 +1,6 @@
 import { Panel, PanelGroup } from 'react-resizable-panels'
 import styled from 'styled-components'
-import { DndContext, DragOverlay, KeyboardSensor, MeasuringStrategy, MouseSensor, TouchSensor, closestCorners, defaultDropAnimationSideEffects, useSensor, useSensors } from '@dnd-kit/core'
+import { DndContext, KeyboardSensor, MeasuringStrategy, MouseSensor, TouchSensor, closestCorners, useSensor, useSensors } from '@dnd-kit/core'
 import { defaultAnimateLayoutChanges, sortableKeyboardCoordinates } from '@dnd-kit/sortable'
 // import { createPortal } from 'react-dom'
 import { useRef, useState } from 'react'

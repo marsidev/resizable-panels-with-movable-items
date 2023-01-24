@@ -5,7 +5,6 @@ import resizeStyles from './ResizeItemHandle.module.scss'
 export const ResizableItemWrapper = forwardRef((props, ref) => {
   const { children, allowResizing, className, style, 'data-id': dataId, ...resizableProps } = props
   const commonProps = { className, style, 'data-id': dataId }
-
   const [isHovering, setIsHovering] = useState(false)
 
   if (!allowResizing) {

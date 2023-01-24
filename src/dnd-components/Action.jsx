@@ -12,8 +12,6 @@ export const Action = forwardRef(
         tabIndex={0}
         style={
           {
-            // 'top': '0px',
-            // 'right': '0px',
             ...style,
             cursor,
             '--fill': active?.fill,
