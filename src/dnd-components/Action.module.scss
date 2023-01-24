@@ -4,10 +4,7 @@ $focused-outline-color: #4c9ffe;
 	position: absolute;
   display: flex;
   width: 12px;
-  padding-top: 12px;
-  padding-bottom: 12px;
-  padding-left: 16px;
-  padding-right: 16px;
+  padding: 8px 12px;
   align-items: center;
   justify-content: center;
   flex: 0 0 auto;
@@ -23,19 +20,11 @@ $focused-outline-color: #4c9ffe;
   @media (hover: hover) {
     &:hover {
       background-color: var(--action-background, rgba(0, 0, 0, 0.05));
-
-      svg {
-        fill: #6f7b88;
-      }
     }
   }
 
   svg {
-    flex: 0 0 auto;
-    margin: auto;
-    height: 100%;
     overflow: visible;
-    fill: #919eab;
   }
 
   &:active {

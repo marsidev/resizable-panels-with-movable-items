@@ -1,15 +1,13 @@
 import { useSortable } from '@dnd-kit/sortable'
 import { useEffect } from 'react'
 import { Item } from '~/dnd-components'
+import { useStore } from '~/store'
 
 export const SortableItem = ({
   disabled,
   animateLayoutChanges,
-  handle,
   item,
-  items,
   index,
-  onRemove,
   useDragOverlay,
   wrapperStyle,
   containerId,
@@ -31,6 +29,9 @@ export const SortableItem = ({
     disabled,
   })
 
+  const allItems = useStore(s => s.items)
+  const items = allItems[containerId]
+
   const activeItem = items.find(item => item.id === active?.id)
   const overItem = items.find(item => item.id === over?.id)
 
@@ -45,10 +46,8 @@ export const SortableItem = ({
       disabled={disabled}
       dragging={isDragging}
       sorting={isSorting}
-      handle={handle}
-      handleProps={handle ? { ref: setActivatorNodeRef } : undefined}
+      handleProps={item.movable ? { ref: setActivatorNodeRef } : undefined}
       index={index}
-      onRemove={onRemove ? () => onRemove(item.id) : undefined}
       transform={transform}
       transition={transition}
       wrapperStyle={wrapperStyle?.({ index, isDragging, active, item })}

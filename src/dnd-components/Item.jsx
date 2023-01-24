@@ -1,9 +1,9 @@
-import { forwardRef, useMemo, useState } from 'react'
+import { forwardRef, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import cn from 'classnames'
 import useMeasure from 'react-use-measure'
 import styles from './Item.module.scss'
-import { Handle as DragHandle, Remove, ResizableItemWrapper } from '~/dnd-components'
+import { AutoAdjust, Handle as DragHandle, Remove, ResizableItemWrapper } from '~/dnd-components'
 import { useStore } from '~/store'
 
 const minTileSize = 100
@@ -56,11 +56,9 @@ export const Item = forwardRef(({
   dragging,
   disabled,
   fadeIn,
-  handle,
   handleProps,
   index,
   listeners,
-  onRemove,
   sorting,
   style,
   transition,
@@ -70,12 +68,9 @@ export const Item = forwardRef(({
   containerId,
   ...props
 }, forwardedRef) => {
-  const incrementResizeCount = useStore(s => s.incrementMainItemResizeCount)
-
-  const [width, setWidth] = useState(item.style.width)
-  const [height, setHeight] = useState(item.style.height)
+  const [setMainItemSize, removeMainItem] = useStore(s => [s.setMainItemSize, s.removeMainItem])
+  const { width, height } = item.style
   const [measureRef, bounds] = useMeasure()
-  // const [isResizing, setIsResizing] = useState(false)
 
   const gridCols = useMemo(() => Math.ceil(width / (minTileSize + defaultGridGap)), [width])
   const gridRows = useMemo(() => Math.ceil(height / (minTileSize + defaultGridGap)), [height])
@@ -106,19 +101,26 @@ export const Item = forwardRef(({
     gridColumnStart: `span ${gridCols}`,
   }
 
+  const onRemove = containerId === 'main' ? () => removeMainItem(item.id) : undefined
+
   const onResizeStop = (e, direction, ref, d) => {
     if (d.width !== 0 || d.height !== 0) {
       const newWidth = width + d.width
       const newHeight = height + d.height
       console.log('onResizeStop', { width, height, item, direction, d, newWidth, newHeight })
 
-      setWidth(width + d.width)
-      setHeight(height + d.height)
-      incrementResizeCount(item.id)
+      setMainItemSize(item.id, {
+        width: newWidth,
+        height: newHeight,
+      })
     }
-
-    // setIsResizing(false)
   }
+
+  // useEffect(() => {
+  //   if (item.value === 32 && containerId === 'main') {
+  //     console.log({ dragging, transform, width, height, gridCols, gridRows, liStyle })
+  //   }
+  // }, [dragging, transform, width, height, gridCols, gridRows, liStyle])
 
   return (
     <ResizableItemWrapper
@@ -139,10 +141,10 @@ export const Item = forwardRef(({
       size={{ width, height }}
       data-id="resizable-item-wrapper"
       onResizeStop={onResizeStop}
-      // onResizeStart={() => setIsResizing(true)}
       enable={{ bottomRight: true, bottom: true, right: true }}
-      allowResizing={containerId === 'main'}
+      resizable={item.resizable}
       bounds={bounds}
+      autoAdjust={item.autoAdjust}
     >
       <motion.div
         ref={measureRef}
@@ -151,7 +153,7 @@ export const Item = forwardRef(({
         className={cn(
           styles.Item,
           dragging && styles.dragging,
-          handle && styles.withHandle,
+          item.handle && styles.withHandle,
           dragOverlay && styles.dragOverlay,
           disabled && styles.disabled,
           color && styles.color,
@@ -174,16 +176,18 @@ export const Item = forwardRef(({
         data-value={item.value}
         data-index={index}
         data-resize-count={item.resizeCount}
-        {...(!handle ? listeners : undefined)}
+        {...(!item.movable ? listeners : undefined)}
         {...props}
-        tabIndex={!handle ? 0 : undefined}
+        tabIndex={!item.movable ? 0 : undefined}
       >
         <span>{item.value}</span>
         <span style={{ fontSize: 12 }}>{Math.round(bounds.width)}x{Math.round(bounds.height)}</span>
 
-        {onRemove && <Remove className={styles.Remove} onClick={onRemove} />}
+        {item.removable && <Remove className={styles.Remove} onClick={onRemove} />}
 
-        {handle && (
+        {item.autoAdjust && <AutoAdjust className={styles.AutoAdjust} />}
+
+        {item.movable && (
           <DragHandle
             className={styles.DragHandle}
             isDragging={dragOverlay || dragging}

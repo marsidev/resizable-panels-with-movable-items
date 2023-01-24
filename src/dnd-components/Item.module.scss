@@ -122,6 +122,10 @@ $focused-outline-color: #4c9ffe;
     .DragHandle {
       visibility: visible;
     }
+
+    .AutoAdjust {
+      visibility: visible;
+    }
   }
 }
 
@@ -130,5 +134,9 @@ $focused-outline-color: #4c9ffe;
 }
 
 .DragHandle {
+  visibility: hidden;
+}
+
+.AutoAdjust {
   visibility: hidden;
 }

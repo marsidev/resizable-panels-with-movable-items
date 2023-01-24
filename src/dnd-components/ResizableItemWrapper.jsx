@@ -1,18 +1,16 @@
 import { forwardRef, useState } from 'react'
 import { Resizable } from 're-resizable'
 import { motion } from 'framer-motion'
-// import useMeasure from 'react-use-measure'
 import resizeStyles from './ResizeItemHandle.module.scss'
 
 export const ResizableItemWrapper = forwardRef((props, forwardedRef) => {
-  const { defaultSize, minHeight, minWidth, size, onResizeStop, enable, allowResizing, children, bounds, ...rest } = props
+  const { defaultSize, minHeight, minWidth, size, onResizeStop, enable, resizable, children, bounds, autoAdjust, ...rest } = props
   const resizableProps = { defaultSize, minHeight, minWidth, size, onResizeStop, enable }
 
   const [isHovering, setIsHovering] = useState(false)
-  // const [measureRef, { width, height }] = useMeasure()
   const { width, height } = bounds
 
-  if (!allowResizing) {
+  if (!resizable) {
     return (
       <div ref={forwardedRef} {...rest}>
         {children}

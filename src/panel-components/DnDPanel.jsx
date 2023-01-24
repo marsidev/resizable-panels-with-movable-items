@@ -20,13 +20,9 @@ export const PanelContainer = styled.div`
 export const DnDPanel = forwardRef((props, ref) => {
   const {
     animateLayoutChanges,
-    handle = false,
-    removable,
     strategy = rectSortingStrategy,
-    wrapperStyle = () => ({}),
     containerId,
     items,
-    handleRemove,
     columns,
   } = props
   const {
@@ -34,6 +30,10 @@ export const DnDPanel = forwardRef((props, ref) => {
   } = useDroppable({
     id: containerId,
   })
+
+  // useEffect(() => {
+  //   containerId === 'main' && console.log({ columns })
+  // }, [columns])
 
   return (
     <PanelContainer ref={ref} data-id="panel-container">
@@ -43,13 +43,8 @@ export const DnDPanel = forwardRef((props, ref) => {
             {items.map((item, index) => (
               <SortableItem
                 item={item}
-                items={items}
                 key={item.id}
-                handle={handle}
                 index={index}
-                wrapperStyle={wrapperStyle}
-                disabled={false}
-                onRemove={removable ? handleRemove : undefined}
                 animateLayoutChanges={animateLayoutChanges}
                 useDragOverlay={true}
                 containerId={containerId}

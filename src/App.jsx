@@ -23,15 +23,11 @@ const tilesContainerPadding = 32
 const mainPanelProps = {
   containerId: 'main',
   animateLayoutChanges: args => defaultAnimateLayoutChanges({ ...args, wasDragging: true }),
-  removable: true,
-  handle: true,
 }
 
 const toolbarPanelProps = {
   containerId: 'toolbar',
   animateLayoutChanges: args => defaultAnimateLayoutChanges({ ...args, wasDragging: true }),
-  removable: false,
-  handle: true,
 }
 
 // const dropAnimationConfig = {
@@ -45,14 +41,12 @@ const toolbarPanelProps = {
 // }
 
 function App() {
-  const [activeItem, setActiveItem] = useStore(s => [s.activeItem, s.setActiveItem])
-  const [items, setItems] = useStore(s => [s.items, s.setItems, s.setMainItems, s.setToolbarItems])
-  const [removeMainItem, removeToolbarItem] = useStore(s => [s.removeMainItem, s.removeToolbarItem])
-  const [moveMainItems, moveToolbarItems] = useStore(s => [s.moveMainItems, s.moveToolbarItems])
+  const [items, activeItem] = useStore(s => [s.items, s.activeItem])
+  const [setItems, setActiveItem, moveMainItems, moveToolbarItems] = useStore(s => [s.setItems, s.setActiveItem, s.moveMainItems, s.moveToolbarItems])
   const { toolbar: toolbarItems, main: mainItems } = items
 
-  const [panel1Cols, setPanel1Cols] = useState(9)
-  const [panel2Cols, setPanel2Cols] = useState(3)
+  const [panel1Cols, setPanel1Cols] = useState()
+  const [panel2Cols, setPanel2Cols] = useState()
 
   const [resizerRef, resizerBounds] = useMeasure()
   const [p1Ref, p1Bounds] = useMeasure()
@@ -216,13 +210,13 @@ function App() {
       >
         <PanelGroup autoSaveId="example-v6" direction="horizontal">
           <Panel defaultSize={80} order={1}>
-            <DnDPanel ref={p1Ref} columns={panel1Cols} {...mainPanelProps} items={mainItems} handleRemove={removeMainItem} />
+            <DnDPanel ref={p1Ref} columns={panel1Cols} {...mainPanelProps} items={mainItems} />
           </Panel>
 
           <ResizeHandle ref={resizerRef} />
 
           <Panel minSize={10} order={2}>
-            <DnDPanel ref={p2Ref} columns={panel2Cols} {...toolbarPanelProps} items={toolbarItems} handleRemove={removeToolbarItem} />
+            <DnDPanel ref={p2Ref} columns={panel2Cols} {...toolbarPanelProps} items={toolbarItems} />
           </Panel>
         </PanelGroup>
 
