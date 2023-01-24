@@ -125,7 +125,6 @@ export const Item = forwardRef(({
       data-resize-count={item.resizeCount}
       className={cn(
         styles.Wrapper,
-        fadeIn && styles.fadeIn,
         sorting && styles.sorting,
         dragOverlay && styles.dragOverlay,
       )}
@@ -165,6 +164,13 @@ export const Item = forwardRef(({
         layoutId={item.id}
         animate={getMotionAnimate(transform, dragging)}
         transition={getMotionTransition(dragging)}
+        exit={{
+          opacity: 0,
+          scale: 0,
+          transition: {
+            duration: 0.25,
+          },
+        }}
         data-value={item.value}
         data-index={index}
         data-resize-count={item.resizeCount}

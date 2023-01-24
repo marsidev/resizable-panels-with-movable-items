@@ -5,13 +5,11 @@ import { Item } from '~/dnd-components'
 export const SortableItem = ({
   disabled,
   animateLayoutChanges,
-  getNewIndex,
   handle,
   item,
   items,
   index,
   onRemove,
-  style,
   useDragOverlay,
   wrapperStyle,
   containerId,
@@ -22,7 +20,6 @@ export const SortableItem = ({
     isDragging,
     isSorting,
     listeners,
-    overIndex,
     setNodeRef,
     setActivatorNodeRef,
     transform,
@@ -32,7 +29,6 @@ export const SortableItem = ({
     id: item.id,
     animateLayoutChanges,
     disabled,
-    getNewIndex,
   })
 
   const activeItem = items.find(item => item.id === active?.id)
@@ -46,20 +42,12 @@ export const SortableItem = ({
     <Item
       ref={setNodeRef}
       item={item}
-      fadeIn={false}
       disabled={disabled}
       dragging={isDragging}
       sorting={isSorting}
       handle={handle}
       handleProps={handle ? { ref: setActivatorNodeRef } : undefined}
       index={index}
-      style={style({
-        index,
-        id: item.id,
-        isDragging,
-        isSorting,
-        overIndex,
-      })}
       onRemove={onRemove ? () => onRemove(item.id) : undefined}
       transform={transform}
       transition={transition}

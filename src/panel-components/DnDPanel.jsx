@@ -2,6 +2,7 @@ import { SortableContext, rectSortingStrategy } from '@dnd-kit/sortable'
 import { useDroppable } from '@dnd-kit/core'
 import styled from 'styled-components'
 import { forwardRef } from 'react'
+import { AnimatePresence } from 'framer-motion'
 import { GridContainer, SortableItem } from '~/dnd-components'
 
 export const PanelContainer = styled.div`
@@ -19,8 +20,6 @@ export const PanelContainer = styled.div`
 export const DnDPanel = forwardRef((props, ref) => {
   const {
     animateLayoutChanges,
-    getItemStyles = () => ({}),
-    getNewIndex,
     handle = false,
     removable,
     strategy = rectSortingStrategy,
@@ -40,23 +39,23 @@ export const DnDPanel = forwardRef((props, ref) => {
     <PanelContainer ref={ref} data-id="panel-container">
       <SortableContext id={containerId} items={items} strategy={strategy}>
         <GridContainer ref={setNodeRef} columns={columns}>
-          {items.map((item, index) => (
-            <SortableItem
-              item={item}
-              items={items}
-              key={item.id}
-              handle={handle}
-              index={index}
-              style={getItemStyles}
-              wrapperStyle={wrapperStyle}
-              disabled={false}
-              onRemove={removable ? handleRemove : undefined}
-              animateLayoutChanges={animateLayoutChanges}
-              useDragOverlay={true}
-              getNewIndex={getNewIndex}
-              containerId={containerId}
-            />
-          ))}
+          <AnimatePresence>
+            {items.map((item, index) => (
+              <SortableItem
+                item={item}
+                items={items}
+                key={item.id}
+                handle={handle}
+                index={index}
+                wrapperStyle={wrapperStyle}
+                disabled={false}
+                onRemove={removable ? handleRemove : undefined}
+                animateLayoutChanges={animateLayoutChanges}
+                useDragOverlay={true}
+                containerId={containerId}
+              />
+            ))}
+          </AnimatePresence>
         </GridContainer>
       </SortableContext>
     </PanelContainer>

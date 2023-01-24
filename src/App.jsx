@@ -22,12 +22,6 @@ const tilesContainerPadding = 32
 
 const mainPanelProps = {
   containerId: 'main',
-  wrapperStyle: ({ index, isDragging, active, item }) => {
-    return {
-      gridRowStart: item.style.width >= 200 ? 'span 2' : undefined,
-      gridColumnStart: item.style.width >= 200 ? 'span 2' : undefined,
-    }
-  },
   animateLayoutChanges: args => defaultAnimateLayoutChanges({ ...args, wasDragging: true }),
   removable: true,
   handle: true,
@@ -35,7 +29,6 @@ const mainPanelProps = {
 
 const toolbarPanelProps = {
   containerId: 'toolbar',
-  wrapperStyle: ({ index, isDragging, active, item }) => ({}),
   animateLayoutChanges: args => defaultAnimateLayoutChanges({ ...args, wasDragging: true }),
   removable: false,
   handle: true,
@@ -58,8 +51,8 @@ function App() {
   const [moveMainItems, moveToolbarItems] = useStore(s => [s.moveMainItems, s.moveToolbarItems])
   const { toolbar: toolbarItems, main: mainItems } = items
 
-  const [panel1Cols, setPanel1Cols] = useState()
-  const [panel2Cols, setPanel2Cols] = useState()
+  const [panel1Cols, setPanel1Cols] = useState(9)
+  const [panel2Cols, setPanel2Cols] = useState(3)
 
   const [resizerRef, resizerBounds] = useMeasure()
   const [p1Ref, p1Bounds] = useMeasure()
@@ -68,6 +61,8 @@ function App() {
 
   // measure all in an useEffect using useMeasure hook and ref
   useEffect(() => {
+    if (containerBounds.width === 0 || resizerBounds.width === 0 || p1Bounds.width === 0 || p2Bounds.width === 0) return
+
     const containerWidth = containerBounds.width
     const resizerWidth = resizerBounds.width
     const p1Width = p1Bounds.width
@@ -86,8 +81,8 @@ function App() {
       panel2Columns,
     })
 
-    setPanel1Cols(panel1Columns)
-    setPanel2Cols(panel2Columns)
+    if (panel1Columns > 0) setPanel1Cols(panel1Columns)
+    if (panel2Columns > 0) setPanel2Cols(panel2Columns)
   }, [p1Bounds, containerBounds])
 
   const getIndex = (id, containerId) => items[containerId].findIndex(item => item.id === id)
