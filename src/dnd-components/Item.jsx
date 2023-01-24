@@ -1,4 +1,4 @@
-import { forwardRef, useState } from 'react'
+import { forwardRef, useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
 import cn from 'classnames'
 import useMeasure from 'react-use-measure'
@@ -6,7 +6,7 @@ import styles from './Item.module.scss'
 import { Handle as DragHandle, Remove, ResizableItemWrapper } from '~/dnd-components'
 import { useStore } from '~/store'
 
-const defaultTileSize = 100
+const minTileSize = 100
 const defaultGridGap = 8
 
 const initialMotionAnimate = {
@@ -77,8 +77,8 @@ export const Item = forwardRef(({
   const [measureRef, bounds] = useMeasure()
   // const [isResizing, setIsResizing] = useState(false)
 
-  const gridCols = Math.ceil(width / (defaultTileSize + defaultGridGap))
-  const gridRows = Math.ceil(height / (defaultTileSize + defaultGridGap))
+  const gridCols = useMemo(() => Math.ceil(width / (minTileSize + defaultGridGap)), [width])
+  const gridRows = useMemo(() => Math.ceil(height / (minTileSize + defaultGridGap)), [height])
 
   const liStyle = {
     ...wrapperStyle,
@@ -131,11 +131,11 @@ export const Item = forwardRef(({
       style={liStyle}
       ref={forwardedRef}
       defaultSize={{
-        width: defaultTileSize,
-        height: defaultTileSize,
+        width: minTileSize,
+        height: minTileSize,
       }}
-      minHeight={defaultTileSize}
-      minWidth={defaultTileSize}
+      minHeight={minTileSize}
+      minWidth={minTileSize}
       size={{ width, height }}
       data-id="resizable-item-wrapper"
       onResizeStop={onResizeStop}

@@ -1,18 +1,22 @@
 import { forwardRef } from 'react'
-import styles from './GridContainer.module.scss'
+import styled from 'styled-components'
+
+const Ul = styled.ul`
+  display: grid;
+  grid-template-columns: ${props => `repeat(${props.columns}, 1fr)`};
+  grid-gap: 8px;
+  padding: 32px;
+`
 
 export const GridContainer = forwardRef(({ children, columns }, ref) => {
   return (
-    <ul
+    <Ul
       ref={ref}
-      className={styles.GridContainer}
-      style={
-        {
-          '--col-count': columns,
-        }
-      }
+      columns={columns || 2}
+      data-id='grid-container'
+      data-columns={columns}
     >
       {children}
-    </ul>
+    </Ul>
   )
 })
