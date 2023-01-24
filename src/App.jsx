@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react'
 import useMeasure from 'react-use-measure'
 import { DnDPanel, ResizeHandle } from '~/panel-components'
 import { useStore } from '~/store'
+import { defaultGridGap, minTileSize, tilesContainerPadding } from '~/constants'
 
 const Container = styled.div`
   width: 100%;
@@ -15,10 +16,6 @@ const Container = styled.div`
   flex-direction: column;
   gap: 1rem;
 `
-
-const minTileSize = 100
-const defaultGridGap = 8
-const tilesContainerPadding = 32
 
 const mainPanelProps = {
   containerId: 'main',
@@ -62,8 +59,8 @@ function App() {
     const p1Width = p1Bounds.width
     const p2Width = p2Bounds.width
 
-    const panel1Columns = Math.floor((p1Width - tilesContainerPadding) / (minTileSize + defaultGridGap))
-    const panel2Columns = Math.floor((p2Width - tilesContainerPadding) / (minTileSize + defaultGridGap))
+    const panel1Cols = Math.floor((p1Width - tilesContainerPadding) / (minTileSize + defaultGridGap))
+    const panel2Cols = Math.floor((p2Width - tilesContainerPadding) / (minTileSize + defaultGridGap))
 
     console.log({
       containerWidth,
@@ -71,12 +68,12 @@ function App() {
       resizerWidth,
       p2Width,
       'p1 + resizer + p2': p1Width + resizerWidth + p2Width,
-      panel1Columns,
-      panel2Columns,
+      panel1Cols,
+      panel2Cols,
     })
 
-    if (panel1Columns > 0) setPanel1Cols(panel1Columns)
-    if (panel2Columns > 0) setPanel2Cols(panel2Columns)
+    if (panel1Cols > 0) setPanel1Cols(panel1Cols)
+    if (panel2Cols > 0) setPanel2Cols(panel2Cols)
   }, [p1Bounds, containerBounds])
 
   const getIndex = (id, containerId) => items[containerId].findIndex(item => item.id === id)

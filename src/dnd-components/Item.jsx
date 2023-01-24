@@ -1,13 +1,11 @@
-import { forwardRef, useMemo } from 'react'
+import { forwardRef, useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
 import cn from 'classnames'
 import useMeasure from 'react-use-measure'
 import styles from './Item.module.scss'
 import { AutoAdjust, Handle as DragHandle, Remove, ResizableItemWrapper } from '~/dnd-components'
 import { useStore } from '~/store'
-
-const minTileSize = 100
-const defaultGridGap = 8
+import { defaultGridGap, minTileSize } from '~/constants'
 
 const initialMotionAnimate = {
   x: 0,
@@ -63,14 +61,16 @@ export const Item = forwardRef(({
   style,
   transition,
   transform,
-  item,
+  itemId,
   wrapperStyle,
   containerId,
   ...props
 }, forwardedRef) => {
-  const [setItemSize, removeItem] = useStore(s => [s.setItemSize, s.removeItem])
-  const { width, height } = item.style
+  const [getItem, setItemSize, removeItem, adjustItemSize] = useStore(s => [s.getItem, s.setItemSize, s.removeItem, s.adjustItemSize])
   const [measureRef, bounds] = useMeasure()
+  const [isResizing, setIsResizing] = useState(false)
+  const item = getItem(itemId, containerId)
+  const { width, height } = item.style
 
   const gridCols = useMemo(() => Math.ceil(width / (minTileSize + defaultGridGap)), [width])
   const gridRows = useMemo(() => Math.ceil(height / (minTileSize + defaultGridGap)), [height])
@@ -103,6 +103,8 @@ export const Item = forwardRef(({
 
   const onRemove = containerId === 'main' ? () => removeItem(item.id) : undefined
 
+  const onAutoAdjust = () => adjustItemSize(item.id)
+
   const onResizeStop = (e, direction, ref, d) => {
     if (d.width !== 0 || d.height !== 0) {
       const newWidth = width + d.width
@@ -114,10 +116,7 @@ export const Item = forwardRef(({
         height: newHeight,
       })
     }
-  }
-
-  const onAutoAdjust = () => {
-    console.log('Auto adjust!', item)
+    setIsResizing(false)
   }
 
   // useEffect(() => {
@@ -145,6 +144,7 @@ export const Item = forwardRef(({
       size={{ width, height }}
       data-id="resizable-item-wrapper"
       onResizeStop={onResizeStop}
+      onResizeStart={() => setIsResizing(true)}
       enable={{ bottomRight: true, bottom: true, right: true }}
       bounds={bounds}
       item={item}
@@ -179,12 +179,19 @@ export const Item = forwardRef(({
         data-value={item.value}
         data-index={index}
         data-resize-count={item.resizeCount}
+        data-width={width}
+        data-height={height}
         {...(!item.movable ? listeners : undefined)}
         {...props}
         tabIndex={!item.movable ? 0 : undefined}
       >
         <span>{item.value}</span>
-        <span style={{ fontSize: 12 }}>{Math.round(bounds.width)}x{Math.round(bounds.height)}</span>
+
+        <span style={{ fontSize: 12 }}>
+          {isResizing
+            ? `${Math.round(bounds.width)}x${Math.round(bounds.height)}`
+            : `${width}x${height}`}
+        </span>
 
         {item.removable && <Remove className={styles.Remove} onClick={onRemove} />}
 

@@ -42,7 +42,7 @@ export const SortableItem = ({
   return (
     <Item
       ref={setNodeRef}
-      item={item}
+      itemId={item.id}
       disabled={disabled}
       dragging={isDragging}
       sorting={isSorting}

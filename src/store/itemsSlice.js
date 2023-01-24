@@ -1,6 +1,27 @@
 import { arrayMove } from '@dnd-kit/sortable'
 import { v4 as uuidv4 } from 'uuid'
+import { defaultGridGap, minTileSize } from '~/constants'
 const MAX_ITEMS = 16
+
+const getColsByWidth = (width) => {
+  const cols = Math.ceil(((width - minTileSize) / (minTileSize + defaultGridGap)) + 1)
+  return cols
+}
+
+const getRowsByHeight = (height) => {
+  const rows = Math.ceil(((height - minTileSize) / (minTileSize + defaultGridGap)) + 1)
+  return rows
+}
+
+const getWidthByCols = (cols) => {
+  const width = (minTileSize * cols) + ((cols - 1) * defaultGridGap)
+  return width
+}
+
+const getHeightByRows = (rows) => {
+  const height = (minTileSize * rows) + ((rows - 1) * defaultGridGap)
+  return height
+}
 
 const defaultItems = {
   toolbar: Array.from({ length: MAX_ITEMS }, (_, i) => {
@@ -68,6 +89,104 @@ export const createItemsSlice = (set, get) => ({
 
     set({ items: { ...items, [panelId]: panel } })
     console.log(`[${panelId}]: resized item ${item.id} (value: ${item.value})`)
+  },
+
+  adjustItemSize: (id, panelId = 'main') => {
+    const { items } = get()
+    const item = items[panelId].find(item => item.id === id)
+    const { width, height } = item.style
+
+    const cols = getColsByWidth(width)
+    const rows = getRowsByHeight(height)
+    const newWidth = getWidthByCols(cols)
+    const newHeight = getHeightByRows(rows)
+
+    set({
+      items: {
+        ...items,
+        [panelId]: items[panelId].map((item) => {
+          if (item.id === id) {
+            return {
+              ...item,
+              style: {
+                ...item.style,
+                width: newWidth,
+                height: newHeight,
+              },
+              resizeCount: item.resizeCount + 1,
+            }
+          }
+          return item
+        }),
+      },
+    })
+
+    console.log(`[${panelId}]: adjusted item ${item.id} (value: ${item.value}) size from ${width}x${height} to ${newWidth}x${newHeight}`)
+  },
+
+  adjustItemWidth: (id, panelId = 'main') => {
+    const { items } = get()
+    const item = items[panelId].find(item => item.id === id)
+    const { width } = item.style
+
+    const cols = getColsByWidth(width)
+    const newWidth = getWidthByCols(cols)
+
+    set({
+      items: {
+        ...items,
+        [panelId]: items[panelId].map((item) => {
+          if (item.id === id) {
+            return {
+              ...item,
+              style: {
+                ...item.style,
+                width: newWidth,
+              },
+              resizeCount: item.resizeCount + 1,
+            }
+          }
+          return item
+        }),
+      },
+    })
+
+    console.log(`[${panelId}]: adjusted item ${item.id} (value: ${item.value}) width from ${width} to ${newWidth}`)
+  },
+
+  adjustItemHeight: (id, panelId = 'main') => {
+    const { items } = get()
+    const item = items[panelId].find(item => item.id === id)
+    const { height } = item.style
+
+    const rows = getRowsByHeight(height)
+    const newHeight = getHeightByRows(rows)
+
+    set({
+      items: {
+        ...items,
+        [panelId]: items[panelId].map((item) => {
+          if (item.id === id) {
+            return {
+              ...item,
+              style: {
+                ...item.style,
+                height: newHeight,
+              },
+              resizeCount: item.resizeCount + 1,
+            }
+          }
+          return item
+        }),
+      },
+    })
+
+    console.log(`[${panelId}]: adjusted item ${item.id} (value: ${item.value}) height from ${height} to ${newHeight}`)
+  },
+
+  getItem: (itemId, panelId = 'main') => {
+    const { items } = get()
+    return items[panelId].find(item => item.id === itemId)
   },
 
   removeItem: (id, panelId = 'main') => {
