@@ -42,34 +42,16 @@ export const createItemsSlice = (set, get) => ({
   setItems: (items) => {
     set({ items })
   },
-  setMainItems: (main) => {
-    set({ items: { ...get().items, main } })
-  },
-  setToolbarItems: (toolbar) => {
-    set({ items: { ...get().items, toolbar } })
-  },
   setActiveItem: (activeItem) => {
     set({ activeItem })
   },
 
-  incrementMainItemResizeCount: (id) => {
-    const { items } = get()
-    const item = items.main.find(item => item.id === id)
-    const main = items.main.map((item) => {
-      if (item.id === id) {
-        return { ...item, resizeCount: item.resizeCount + 1 }
-      }
-      return item
-    })
-    set({ items: { ...items, main } })
-    console.log(`[main]: resized item ${item.id} (value: ${item.value})`)
-  },
-
-  setMainItemSize: (id, size) => {
+  setItemSize: (id, size, panelId = 'main') => {
     const { items } = get()
     const { width, height } = size
-    const item = items.main.find(item => item.id === id)
-    const main = items.main.map((item) => {
+    const item = items[panelId].find(item => item.id === id)
+
+    const panel = items[panelId].map((item) => {
       if (item.id === id) {
         return {
           ...item,
@@ -83,36 +65,27 @@ export const createItemsSlice = (set, get) => ({
       }
       return item
     })
-    set({ items: { ...items, main } })
-    console.log(`[main]: resized item ${item.id} (value: ${item.value})`)
+
+    set({ items: { ...items, [panelId]: panel } })
+    console.log(`[${panelId}]: resized item ${item.id} (value: ${item.value})`)
   },
 
-  removeMainItem: (id) => {
+  removeItem: (id, panelId = 'main') => {
     const { items } = get()
-    const itemToRemove = items.main.find(item => item.id === id)
-    const main = items.main.filter(item => item.id !== id)
-    set({ items: { ...items, main } })
+    const itemToRemove = items[panelId].find(item => item.id === id)
+    const panel = items[panelId].filter(item => item.id !== id)
 
-    console.log(`[main]: removed item ${itemToRemove.id} (value: ${itemToRemove.value})`)
+    set({ items: { ...items, [panelId]: panel } })
+    console.log(`[${panelId}]: removed item ${itemToRemove.id} (value: ${itemToRemove.value})`)
   },
 
-  moveMainItems: (oldIndex, newIndex) => {
+  moveItems: (oldIndex, newIndex, panelId = 'main') => {
     const { items } = get()
-    const sourceItem = items.main[oldIndex]
-    const targetItem = items.main[newIndex]
-    const main = arrayMove([...items.main], oldIndex, newIndex)
-    set({ items: { ...items, main } })
+    const sourceItem = items[panelId][oldIndex]
+    const targetItem = items[panelId][newIndex]
+    const panel = arrayMove([...items[panelId]], oldIndex, newIndex)
 
-    console.log(`[main]: moved item from pos ${oldIndex} (value: ${sourceItem.value}) to pos ${newIndex} (value: ${targetItem.value})`)
-  },
-
-  moveToolbarItems: (oldIndex, newIndex) => {
-    const { items } = get()
-    const sourceItem = items.toolbar[oldIndex]
-    const targetItem = items.toolbar[newIndex]
-    const toolbar = arrayMove([...items.toolbar], oldIndex, newIndex)
-    set({ items: { ...items, toolbar } })
-
-    console.log(`[toolbar]: moved item from pos ${oldIndex} (value: ${sourceItem.value}) to pos ${newIndex} (value: ${targetItem.value})`)
+    set({ items: { ...items, [panelId]: panel } })
+    console.log(`[${panelId}]: moved item from pos ${oldIndex} (value: ${sourceItem.value}) to pos ${newIndex} (value: ${targetItem.value})`)
   },
 })

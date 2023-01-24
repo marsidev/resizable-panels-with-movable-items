@@ -42,7 +42,7 @@ const toolbarPanelProps = {
 
 function App() {
   const [items, activeItem] = useStore(s => [s.items, s.activeItem])
-  const [setItems, setActiveItem, moveMainItems, moveToolbarItems] = useStore(s => [s.setItems, s.setActiveItem, s.moveMainItems, s.moveToolbarItems])
+  const [setItems, setActiveItem, moveItems] = useStore(s => [s.setItems, s.setActiveItem, s.moveItems])
   const { toolbar: toolbarItems, main: mainItems } = items
 
   const [panel1Cols, setPanel1Cols] = useState()
@@ -133,12 +133,7 @@ function App() {
     console.log({ handler: 'dragEnd', activeContainer, overContainer, activeItem, overItem })
 
     if (activeIndex !== overIndex) {
-      if (activeContainer === 'main') {
-        moveMainItems(activeIndex, overIndex)
-      }
-      if (activeContainer === 'toolbar') {
-        moveToolbarItems(activeIndex, overIndex)
-      }
+      moveItems(activeIndex, overIndex, activeContainer)
     }
 
     setActiveItem(null)

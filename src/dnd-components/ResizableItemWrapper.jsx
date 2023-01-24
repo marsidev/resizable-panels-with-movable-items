@@ -4,11 +4,12 @@ import { motion } from 'framer-motion'
 import resizeStyles from './ResizeItemHandle.module.scss'
 
 export const ResizableItemWrapper = forwardRef((props, forwardedRef) => {
-  const { defaultSize, minHeight, minWidth, size, onResizeStop, enable, resizable, children, bounds, autoAdjust, ...rest } = props
+  const { defaultSize, minHeight, minWidth, size, onResizeStop, enable, children, bounds, item, ...rest } = props
   const resizableProps = { defaultSize, minHeight, minWidth, size, onResizeStop, enable }
 
   const [isHovering, setIsHovering] = useState(false)
   const { width, height } = bounds
+  const { autoAdjust, resizable } = item
 
   if (!resizable) {
     return (
@@ -30,8 +31,8 @@ export const ResizableItemWrapper = forwardRef((props, forwardedRef) => {
       <Resizable
         handleComponent={{
           bottomRight: <div data-visible={isHovering} className={resizeStyles.BottomRightHandleResize} />,
-          bottom: <div data-visible={isHovering} className={resizeStyles.BottomHandleResize} />,
-          right: <div data-visible={isHovering} className={resizeStyles.RightHandleResize} />,
+          bottom: <span onDoubleClick={() => console.log('adjust bottom!', item)} data-visible={isHovering} className={resizeStyles.BottomHandleResize} />,
+          right: <span onDoubleClick={() => console.log('adjust right!', item)} data-visible={isHovering} className={resizeStyles.RightHandleResize} />,
         }}
         handleClasses={{
           bottom: resizeStyles.BottomHandleResizeWrapper,

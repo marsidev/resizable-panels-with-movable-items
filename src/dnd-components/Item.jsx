@@ -68,7 +68,7 @@ export const Item = forwardRef(({
   containerId,
   ...props
 }, forwardedRef) => {
-  const [setMainItemSize, removeMainItem] = useStore(s => [s.setMainItemSize, s.removeMainItem])
+  const [setItemSize, removeItem] = useStore(s => [s.setItemSize, s.removeItem])
   const { width, height } = item.style
   const [measureRef, bounds] = useMeasure()
 
@@ -101,7 +101,7 @@ export const Item = forwardRef(({
     gridColumnStart: `span ${gridCols}`,
   }
 
-  const onRemove = containerId === 'main' ? () => removeMainItem(item.id) : undefined
+  const onRemove = containerId === 'main' ? () => removeItem(item.id) : undefined
 
   const onResizeStop = (e, direction, ref, d) => {
     if (d.width !== 0 || d.height !== 0) {
@@ -109,11 +109,15 @@ export const Item = forwardRef(({
       const newHeight = height + d.height
       console.log('onResizeStop', { width, height, item, direction, d, newWidth, newHeight })
 
-      setMainItemSize(item.id, {
+      setItemSize(item.id, {
         width: newWidth,
         height: newHeight,
       })
     }
+  }
+
+  const onAutoAdjust = () => {
+    console.log('Auto adjust!', item)
   }
 
   // useEffect(() => {
@@ -142,9 +146,8 @@ export const Item = forwardRef(({
       data-id="resizable-item-wrapper"
       onResizeStop={onResizeStop}
       enable={{ bottomRight: true, bottom: true, right: true }}
-      resizable={item.resizable}
       bounds={bounds}
-      autoAdjust={item.autoAdjust}
+      item={item}
     >
       <motion.div
         ref={measureRef}
@@ -153,7 +156,7 @@ export const Item = forwardRef(({
         className={cn(
           styles.Item,
           dragging && styles.dragging,
-          item.handle && styles.withHandle,
+          item.movable && styles.withHandle,
           dragOverlay && styles.dragOverlay,
           disabled && styles.disabled,
           color && styles.color,
@@ -185,7 +188,7 @@ export const Item = forwardRef(({
 
         {item.removable && <Remove className={styles.Remove} onClick={onRemove} />}
 
-        {item.autoAdjust && <AutoAdjust className={styles.AutoAdjust} />}
+        {item.autoAdjust && <AutoAdjust className={styles.AutoAdjust} onClick={onAutoAdjust} />}
 
         {item.movable && (
           <DragHandle
