@@ -1,12 +1,12 @@
-import { Panel, PanelGroup } from 'react-resizable-panels'
 import styled from 'styled-components'
 import { DndContext, KeyboardSensor, MeasuringStrategy, MouseSensor, TouchSensor, closestCorners, useSensor, useSensors } from '@dnd-kit/core'
 import { defaultAnimateLayoutChanges, sortableKeyboardCoordinates } from '@dnd-kit/sortable'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import useMeasure from 'react-use-measure'
-import { DnDPanel, ResizeHandle } from '~/panel-components'
+import { DnDPanel, Panel, PanelGroup, ResizeHandle } from '~/panel-components'
 import { useStore } from '~/store'
 import { defaultGridGap, minTileSize, tilesContainerPadding } from '~/constants'
+// import { useDimensions } from '~/use-dimensions'
 
 const Container = styled.div`
   width: 100%;
@@ -39,6 +39,7 @@ const toolbarPanelProps = {
 
 function App() {
   const [items, activeItem] = useStore(s => [s.items, s.activeItem])
+  const [showGridLines, toggleShowGridLines] = useStore(s => [s.showGridLines, s.toggleShowGridLines])
   const [setItems, setActiveItem, moveItems] = useStore(s => [s.setItems, s.setActiveItem, s.moveItems])
   const { toolbar: toolbarItems, main: mainItems } = items
 
@@ -46,34 +47,51 @@ function App() {
   const [panel2Cols, setPanel2Cols] = useState()
 
   const [resizerRef, resizerBounds] = useMeasure()
+  const [containerRef, containerBounds] = useMeasure()
+  // const p1Ref = useRef()
+  // const p2Ref = useRef()
+
   const [p1Ref, p1Bounds] = useMeasure()
   const [p2Ref, p2Bounds] = useMeasure()
-  const [containerRef, containerBounds] = useMeasure()
 
   // measure all in an useEffect using useMeasure hook and ref
   useEffect(() => {
     if (containerBounds.width === 0 || resizerBounds.width === 0 || p1Bounds.width === 0 || p2Bounds.width === 0) return
 
-    const containerWidth = containerBounds.width
-    const resizerWidth = resizerBounds.width
     const p1Width = p1Bounds.width
     const p2Width = p2Bounds.width
+    // const p1Width = p1Ref.current.scrollWidth
+    // const p2Width = p2Ref.current.scrollWidth
 
-    const panel1Cols = Math.floor((p1Width - tilesContainerPadding) / (minTileSize + defaultGridGap))
-    const panel2Cols = Math.floor((p2Width - tilesContainerPadding) / (minTileSize + defaultGridGap))
+    const p1Cols = Math.floor((p1Width - tilesContainerPadding) / (minTileSize + defaultGridGap))
+    const p2Cols = Math.floor((p2Width - tilesContainerPadding) / (minTileSize + defaultGridGap))
+
+    const p1Height = p1Bounds.height
+    const p2Height = p2Bounds.height
+    // const p1Height = p1Ref.current.scrollHeight
+    // const p2Height = p2Ref.current.scrollHeight
+
+    const p1Rows = Math.floor((p1Height - tilesContainerPadding) / (minTileSize + defaultGridGap))
+    const p2Rows = Math.floor((p2Height - tilesContainerPadding) / (minTileSize + defaultGridGap))
 
     console.log({
-      containerWidth,
       p1Width,
-      resizerWidth,
+      p1Height,
+      p1Cols,
+      p1Rows,
       p2Width,
-      'p1 + resizer + p2': p1Width + resizerWidth + p2Width,
-      panel1Cols,
-      panel2Cols,
+      p2Height,
+      p2Cols,
+      p2Rows,
+      // containerWidth,
+      // resizerWidth,
+      // 'p1 + resizer + p2': p1Width + resizerWidth + p2Width,
+      // p1Bounds,
+      // p2Bounds,
     })
 
-    if (panel1Cols > 0) setPanel1Cols(panel1Cols)
-    if (panel2Cols > 0) setPanel2Cols(panel2Cols)
+    if (p1Cols > 0) setPanel1Cols(p1Cols)
+    if (p2Cols > 0) setPanel2Cols(p2Cols)
   }, [p1Bounds, containerBounds])
 
   const getIndex = (id, containerId) => items[containerId].findIndex(item => item.id === id)
@@ -190,9 +208,8 @@ function App() {
   }
 
   return (
-    <Container ref={containerRef}>
+    <Container data-id="container" ref={containerRef}>
       <DndContext
-        // announcements={defaultAnnouncements}
         sensors={sensors}
         collisionDetection={closestCorners}
         onDragStart={handleDragStart}
@@ -200,15 +217,26 @@ function App() {
         onDragEnd={handleDragEnd}
         measuring={{ droppable: { strategy: MeasuringStrategy.Always } }}
       >
-        <PanelGroup autoSaveId="example-v6" direction="horizontal">
-          <Panel defaultSize={80} order={1}>
-            <DnDPanel ref={p1Ref} columns={panel1Cols} {...mainPanelProps} items={mainItems} />
+        <div>
+          <input
+            type="checkbox"
+            id="show-grids"
+            name="show-grids"
+            checked={showGridLines}
+            onChange={toggleShowGridLines}
+          />
+          Ver grillas
+        </div>
+
+        <PanelGroup data-id="panel-group" autoSaveId="example-v6" direction="horizontal">
+          <Panel ref={p1Ref} data-id="main-panel" defaultSize={80} order={1}>
+            <DnDPanel columns={panel1Cols} {...mainPanelProps} items={mainItems} />
           </Panel>
 
           <ResizeHandle ref={resizerRef} />
 
-          <Panel minSize={10} order={2}>
-            <DnDPanel ref={p2Ref} columns={panel2Cols} {...toolbarPanelProps} items={toolbarItems} />
+          <Panel ref={p2Ref} data-id="toolbar-panel" minSize={10} order={2}>
+            <DnDPanel columns={panel2Cols} {...toolbarPanelProps} items={toolbarItems} />
           </Panel>
         </PanelGroup>
 
