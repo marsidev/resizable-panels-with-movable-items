@@ -3,5 +3,8 @@ export const createGeneralSlice = (set, get) => ({
   setActiveItem: activeItem => set({ activeItem }),
 
   showGridLines: false,
-  toggleShowGridLines: () => set(state => ({ showGrids: !state.showGrids })),
+  toggleShowGridLines: () => {
+    const { showGridLines } = get()
+    set(() => ({ showGridLines: !showGridLines }))
+  },
 })
