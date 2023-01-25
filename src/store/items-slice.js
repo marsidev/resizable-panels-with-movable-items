@@ -1,27 +1,7 @@
 import { arrayMove } from '@dnd-kit/sortable'
 import { v4 as uuidv4 } from 'uuid'
-import { defaultGridGap, minTileSize } from '~/constants'
-const MAX_ITEMS = 16
-
-const getColsByWidth = (width) => {
-  const cols = Math.ceil(((width - minTileSize) / (minTileSize + defaultGridGap)) + 1)
-  return cols
-}
-
-const getRowsByHeight = (height) => {
-  const rows = Math.ceil(((height - minTileSize) / (minTileSize + defaultGridGap)) + 1)
-  return rows
-}
-
-const getWidthByCols = (cols) => {
-  const width = (minTileSize * cols) + ((cols - 1) * defaultGridGap)
-  return width
-}
-
-const getHeightByRows = (rows) => {
-  const height = (minTileSize * rows) + ((rows - 1) * defaultGridGap)
-  return height
-}
+import { getColsByWidth, getHeightByRows, getRowsByHeight, getWidthByCols } from './utils'
+import { MAX_ITEMS } from '~/constants'
 
 const defaultItems = {
   toolbar: Array.from({ length: MAX_ITEMS }, (_, i) => {
@@ -58,13 +38,9 @@ const defaultItems = {
 
 export const createItemsSlice = (set, get) => ({
   items: defaultItems,
-  activeItem: null,
 
   setItems: (items) => {
     set({ items })
-  },
-  setActiveItem: (activeItem) => {
-    set({ activeItem })
   },
 
   setItemSize: (id, size, panelId = 'main') => {
