@@ -1,12 +1,11 @@
 import styled from 'styled-components'
 import { DndContext, KeyboardSensor, MeasuringStrategy, MouseSensor, TouchSensor, closestCorners, useSensor, useSensors } from '@dnd-kit/core'
 import { defaultAnimateLayoutChanges, sortableKeyboardCoordinates } from '@dnd-kit/sortable'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import useMeasure from 'react-use-measure'
 import { DnDPanel, Panel, PanelGroup, ResizeHandle } from '~/panel-components'
 import { useStore } from '~/store'
 import { defaultGridGap, minTileSize, tilesContainerPadding } from '~/constants'
-// import { useDimensions } from '~/use-dimensions'
 
 const Container = styled.div`
   width: 100%;

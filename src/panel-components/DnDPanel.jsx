@@ -1,20 +1,25 @@
 import { SortableContext, rectSortingStrategy } from '@dnd-kit/sortable'
 import { useDroppable } from '@dnd-kit/core'
 import styled from 'styled-components'
-import { forwardRef } from 'react'
+import { forwardRef, useRef } from 'react'
 import { AnimatePresence } from 'framer-motion'
+import useMeasure from 'react-use-measure'
 import { GridContainer, SortableItem } from '~/dnd-components'
+import { GridHelper } from '~/dnd-components/GridHelper'
+import { useStore } from '~/store'
+import { useMergeRefs } from '~/use-merge-refs'
 
 export const PanelContainer = styled.div`
   display: flex;
   flex-direction: row;
   align-items: flex-start;
-  max-height: calc(100vh);
+  max-height: 100vh;
   background-color: var(--color-panel-background);
   justify-content: flex-start;
   height: 100%;
   border-radius: 0.5rem;
   overflow-y: auto;
+  position: relative;
 `
 
 export const DnDPanel = forwardRef((props, ref) => {
@@ -30,15 +35,15 @@ export const DnDPanel = forwardRef((props, ref) => {
   } = useDroppable({
     id: containerId,
   })
-
-  // useEffect(() => {
-  //   containerId === 'main' && console.log({ columns })
-  // }, [columns])
+  const [showGridLines] = useStore(s => [s.showGridLines])
+  const [measureRef, gridBounds] = useMeasure()
+  const grid = useRef()
+  const gridRefs = useMergeRefs(grid, setNodeRef, measureRef)
 
   return (
     <PanelContainer ref={ref} data-id="panel-container">
       <SortableContext id={containerId} items={items} strategy={strategy}>
-        <GridContainer ref={setNodeRef} columns={columns}>
+        <GridContainer ref={gridRefs} columns={columns}>
           <AnimatePresence>
             {items.map((item, index) => (
               <SortableItem
@@ -52,6 +57,14 @@ export const DnDPanel = forwardRef((props, ref) => {
             ))}
           </AnimatePresence>
         </GridContainer>
+
+        {showGridLines && containerId === 'main' && (
+          <GridHelper
+            numColumns={columns}
+            mainGridRef={grid}
+            gridBounds={gridBounds}
+          />
+        )}
       </SortableContext>
     </PanelContainer>
   )
