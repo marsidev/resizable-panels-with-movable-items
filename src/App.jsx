@@ -65,29 +65,23 @@ function App() {
     const p1Cols = Math.floor((p1Width - tilesContainerPadding) / (minTileSize + defaultGridGap))
     const p2Cols = Math.floor((p2Width - tilesContainerPadding) / (minTileSize + defaultGridGap))
 
-    const p1Height = p1Bounds.height
-    const p2Height = p2Bounds.height
+    // const p1Height = p1Bounds.height
+    // const p2Height = p2Bounds.height
     // const p1Height = p1Ref.current.scrollHeight
     // const p2Height = p2Ref.current.scrollHeight
 
-    const p1Rows = Math.floor((p1Height - tilesContainerPadding) / (minTileSize + defaultGridGap))
-    const p2Rows = Math.floor((p2Height - tilesContainerPadding) / (minTileSize + defaultGridGap))
+    // const p1Rows = Math.floor((p1Height - tilesContainerPadding) / (minTileSize + defaultGridGap))
+    // const p2Rows = Math.floor((p2Height - tilesContainerPadding) / (minTileSize + defaultGridGap))
 
-    console.log({
-      p1Width,
-      p1Height,
-      p1Cols,
-      p1Rows,
-      p2Width,
-      p2Height,
-      p2Cols,
-      p2Rows,
-      // containerWidth,
-      // resizerWidth,
-      // 'p1 + resizer + p2': p1Width + resizerWidth + p2Width,
-      // p1Bounds,
-      // p2Bounds,
-    })
+    // console.log({
+    //   p1Width,
+    //   // p1Height,
+    //   p1Cols,
+    //   // p1Rows,
+    //   p2Width,
+    //   // p2Height,
+    //   p2Cols,
+    // })
 
     if (p1Cols > 0) setPanel1Cols(p1Cols)
     if (p2Cols > 0) setPanel2Cols(p2Cols)

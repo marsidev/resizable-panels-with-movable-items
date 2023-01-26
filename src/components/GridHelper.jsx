@@ -1,3 +1,4 @@
+import { AnimatePresence, motion } from 'framer-motion'
 import { memo, useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { defaultGridGap, minTileSize, tilesContainerPadding } from '~/constants'
@@ -30,25 +31,21 @@ const Wrapper = styled.div`
   }
 `
 
-const Helper = ({ numColumns, mainGridRef, gridBounds }) => {
+const Helper = ({ numColumns, gridBounds, itemsCount }) => {
   const [gridRows, setGridRows] = useState()
 
   useEffect(() => {
-    if (!mainGridRef.current) return
+    if (!gridBounds.width || !gridBounds.height) return
 
-    const gridScrollWidth = mainGridRef.current.offsetWidth
-    const cols = Math.floor((gridScrollWidth + defaultGridGap) / (minTileSize + defaultGridGap))
-    const gridScrollHeight = mainGridRef.current.scrollHeight
-    const rows = Math.floor((gridScrollHeight + defaultGridGap) / (minTileSize + defaultGridGap))
+    // const gridHeight = mainGridRef.current.scrollHeight - 2 * tilesContainerPadding
+    const gridHeight = gridBounds.height - 2 * tilesContainerPadding
+    const rows = Math.ceil((gridHeight + defaultGridGap) / (minTileSize + defaultGridGap))
 
-    console.log({
-      grid: mainGridRef.current,
-      cols,
-      rows,
-    })
+    // const gridWidth = gridBounds.width - 2 * tilesContainerPadding
+    // const cols = Math.ceil((gridWidth + defaultGridGap) / (minTileSize + defaultGridGap))
 
     setGridRows(rows)
-  }, [mainGridRef, numColumns, gridBounds])
+  }, [numColumns, gridBounds, itemsCount])
 
   return (
     <Wrapper
@@ -56,12 +53,49 @@ const Helper = ({ numColumns, mainGridRef, gridBounds }) => {
       $numRows={gridRows || 1}
       $gridHeight={gridBounds.height}
       $gridWidth={gridBounds.width}
-      data-id="svg-grid-helper"
+      data-id="grid-helper"
+      transition={{ duration: 0.25 }}
     >
-      {Array.from({ length: numColumns * gridRows })
-        .map((_, i) => (
-          <div key={i} data="svg-grid-helper-item" />
-        ))}
+      <AnimatePresence>
+        {Array.from({ length: numColumns * gridRows })
+          .map((_, i) => (
+            <motion.div
+              key={i}
+              data-id="grid-helper-item"
+              layout
+              layoutId={`grid-helper-item-${i}`}
+              exit={{
+                opacity: 0,
+                scale: 0,
+                transition: {
+                  duration: 0.25,
+                },
+              }}
+              transition={{
+                duration: 0.25,
+                easings: {
+                  type: 'spring',
+                },
+                scale: {
+                  duration: 0.25,
+                },
+                zIndex: {
+                  delay: 0.25,
+                },
+                // type: 'spring',
+                // stiffness: 350,
+                // damping: 25,
+              }}
+              animate={{
+                x: 0,
+                y: 0,
+                scale: 1,
+                opacity: 1,
+                zIndex: 0,
+              }}
+            />
+          ))}
+      </AnimatePresence>
     </Wrapper>
   )
 }

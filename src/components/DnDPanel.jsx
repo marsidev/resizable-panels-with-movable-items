@@ -1,7 +1,7 @@
 import { SortableContext, rectSortingStrategy } from '@dnd-kit/sortable'
 import { useDroppable } from '@dnd-kit/core'
 import styled from 'styled-components'
-import { forwardRef, useRef } from 'react'
+import { forwardRef } from 'react'
 import { AnimatePresence } from 'framer-motion'
 import useMeasure from 'react-use-measure'
 import { GridContainer, SortableItem } from '~/components'
@@ -37,8 +37,7 @@ export const DnDPanel = forwardRef((props, ref) => {
   })
   const [showGridLines] = useStore(s => [s.showGridLines])
   const [measureRef, gridBounds] = useMeasure()
-  const grid = useRef()
-  const gridRefs = useMergeRefs(grid, setNodeRef, measureRef)
+  const gridRefs = useMergeRefs(setNodeRef, measureRef)
 
   return (
     <PanelContainer ref={ref} data-id="panel-container">
@@ -61,8 +60,8 @@ export const DnDPanel = forwardRef((props, ref) => {
         {showGridLines && containerId === 'main' && (
           <GridHelper
             numColumns={columns}
-            mainGridRef={grid}
             gridBounds={gridBounds}
+            itemsCount={items.length}
           />
         )}
       </SortableContext>
