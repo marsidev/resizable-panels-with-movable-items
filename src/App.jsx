@@ -91,7 +91,7 @@ function App() {
 
     if (p1Cols > 0) setPanel1Cols(p1Cols)
     if (p2Cols > 0) setPanel2Cols(p2Cols)
-  }, [p1Bounds, containerBounds])
+  }, [p1Bounds, containerBounds, mainItems.length, toolbarItems.length, resizerBounds])
 
   const getIndex = (id, containerId) => items[containerId].findIndex(item => item.id === id)
 

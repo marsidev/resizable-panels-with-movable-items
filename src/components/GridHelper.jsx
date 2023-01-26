@@ -36,19 +36,19 @@ const Helper = ({ numColumns, mainGridRef, gridBounds }) => {
   useEffect(() => {
     if (!mainGridRef.current) return
 
-    // const gridScrollWidth = mainGridRef.current.offsetWidth
-    // const cols = Math.floor((gridScrollWidth + defaultGridGap) / (minTileSize + defaultGridGap))
+    const gridScrollWidth = mainGridRef.current.offsetWidth
+    const cols = Math.floor((gridScrollWidth + defaultGridGap) / (minTileSize + defaultGridGap))
     const gridScrollHeight = mainGridRef.current.scrollHeight
     const rows = Math.floor((gridScrollHeight + defaultGridGap) / (minTileSize + defaultGridGap))
 
-    // console.log({
-    //   grid: mainGridRef.current,
-    //   cols,
-    //   rows,
-    // })
+    console.log({
+      grid: mainGridRef.current,
+      cols,
+      rows,
+    })
 
     setGridRows(rows)
-  }, [mainGridRef, numColumns])
+  }, [mainGridRef, numColumns, gridBounds])
 
   return (
     <Wrapper
@@ -58,7 +58,10 @@ const Helper = ({ numColumns, mainGridRef, gridBounds }) => {
       $gridWidth={gridBounds.width}
       data-id="svg-grid-helper"
     >
-      {Array.from({ length: numColumns * gridRows }).map(i => <div key={i} data="svg-grid-helper-item" />)}
+      {Array.from({ length: numColumns * gridRows })
+        .map((_, i) => (
+          <div key={i} data="svg-grid-helper-item" />
+        ))}
     </Wrapper>
   )
 }
