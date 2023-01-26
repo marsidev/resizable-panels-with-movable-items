@@ -33,18 +33,18 @@ const getMotionTransition = dragging => ({
 const getMotionAnimate = (transform, dragging) => {
   return transform
     ? {
-      x: Math.round(transform.x),
-      y: Math.round(transform.y),
-      // scale: dragging ? 1.05 : 1,
-      zIndex: dragging ? 1 : 0,
-      // boxShadow: dragging
-      //   ? '0 0 0 1px rgba(63, 63, 68, 0.05), 0px 15px 15px 0 rgba(34, 33, 81, 0.25)'
-      //   : undefined,
-      opacity: dragging ? 0.5 : 1,
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-    }
+        x: Math.round(transform.x),
+        y: Math.round(transform.y),
+        // scale: dragging ? 1.05 : 1,
+        zIndex: dragging ? 1 : 0,
+        // boxShadow: dragging
+        //   ? '0 0 0 1px rgba(63, 63, 68, 0.05), 0px 15px 15px 0 rgba(34, 33, 81, 0.25)'
+        //   : undefined,
+        opacity: dragging ? 0.5 : 1,
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+      }
     : initialMotionAnimate
 }
 
@@ -53,13 +53,12 @@ export const Item = forwardRef(({
   dragOverlay,
   dragging,
   disabled,
-  fadeIn,
   handleProps,
   index,
   listeners,
   sorting,
-  style,
-  transition,
+  // style,
+  // transition,
   transform,
   itemId,
   wrapperStyle,

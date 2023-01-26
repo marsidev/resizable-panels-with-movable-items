@@ -39,7 +39,7 @@ export const ResizableItemWrapper = forwardRef((props, forwardedRef) => {
             className={resizeStyles.BottomHandleResize}
           />,
           right: <span
-            onDoubleClick={autoAdjust ? e => adjustItemWidth(item.id) : undefined}
+            onDoubleClick={autoAdjust ? () => adjustItemWidth(item.id) : undefined}
             data-visible={isHovering}
             className={resizeStyles.RightHandleResize}
           />,
