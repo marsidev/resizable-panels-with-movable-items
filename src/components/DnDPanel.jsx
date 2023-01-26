@@ -4,10 +4,10 @@ import styled from 'styled-components'
 import { forwardRef, useRef } from 'react'
 import { AnimatePresence } from 'framer-motion'
 import useMeasure from 'react-use-measure'
-import { GridContainer, SortableItem } from '~/dnd-components'
-import { GridHelper } from '~/dnd-components/GridHelper'
+import { GridContainer, SortableItem } from '~/components'
+import { GridHelper } from '~/components/GridHelper'
 import { useStore } from '~/store'
-import { useMergeRefs } from '~/use-merge-refs'
+import { useMergeRefs } from '~/hooks/use-merge-refs'
 
 export const PanelContainer = styled.div`
   display: flex;

@@ -1,6 +1,6 @@
 import { useSortable } from '@dnd-kit/sortable'
 import { useEffect } from 'react'
-import { Item } from '~/dnd-components'
+import { Item } from '~/components'
 import { useStore } from '~/store'
 
 export const SortableItem = ({

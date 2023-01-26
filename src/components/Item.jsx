@@ -3,7 +3,7 @@ import { motion } from 'framer-motion'
 import cn from 'classnames'
 import useMeasure from 'react-use-measure'
 import styles from './Item.module.scss'
-import { AutoAdjust, Handle as DragHandle, Remove, ResizableItemWrapper } from '~/dnd-components'
+import { AutoAdjust, Handle as DragHandle, Remove, ResizableItemWrapper } from '~/components'
 import { useStore } from '~/store'
 import { defaultGridGap, minTileSize } from '~/constants'
 

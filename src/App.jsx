@@ -3,7 +3,7 @@ import { DndContext, KeyboardSensor, MeasuringStrategy, MouseSensor, TouchSensor
 import { defaultAnimateLayoutChanges, sortableKeyboardCoordinates } from '@dnd-kit/sortable'
 import { useEffect, useState } from 'react'
 import useMeasure from 'react-use-measure'
-import { DnDPanel, Panel, PanelGroup, ResizeHandle } from '~/panel-components'
+import { DnDPanel, Panel, PanelGroup, ResizeHandle } from '~/components'
 import { useStore } from '~/store'
 import { defaultGridGap, minTileSize, tilesContainerPadding } from '~/constants'
 
